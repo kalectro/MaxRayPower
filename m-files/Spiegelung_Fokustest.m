@@ -50,7 +50,7 @@ rays = raymaker(phi, theta);
 
 %%%%%%%%%%%%%%%%%% Function call!
 % Kollisionen mit Spiegel und boundaries checken.
-[rays, ind_of_rays_that_hit_it] = collision_tracker(rays, handle_to_mirror_function);
+[rays, ind_of_rays_that_hit_it] = collision_tracker_kai(rays, handle_to_mirror_function);
 %%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%% Function call!
