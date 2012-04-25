@@ -9,9 +9,10 @@ focus_line = zeros(3,max(length(theta_vector),length(phi_vector)));
 %mirr_borders are quadratic
 %Kantenlänge = mirr_edge_length = 5 "=" 5meters
 
-global mirr_borders half_mirr_edge_length
+global mirr_borders half_mirr_edge_length mirr_radius
 half_mirr_edge_length = 1.5;
 mirr_borders = [-half_mirr_edge_length half_mirr_edge_length -half_mirr_edge_length half_mirr_edge_length];
+mirr_radius = sqrt(10/pi); %10m^2 Grundfäche sind erlaubt
 
 % min_borders = 100*[-50; -50; -100]; %x,y,z borders in a 3x1 vector
 % max_borders = 100*[50; 50; 100];
