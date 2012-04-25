@@ -1,0 +1,12 @@
+Hallo!
+Das Ausgabe-Datenformat ist noch nicht richtig, aber wir können jetzt schonmal Strahlen aus einer phi/theta-gekippten Ebene kommend erzeugen. Die Anzahl ist beliebig (ist noch kein Eingabeargument, kann man ja machen wenn man will...), zurzeit immer quadratisch und 10*10.
+
+Wenn ihr 100*100 etc ausprobiert aufpassen (killt den Intel Atom...), da alle Strahlen geplottet werden. Dazu das Matlab-Central-Tool arrow3, welches sehr schöne Pfeile zeichnet.
+
+###################
+
+update 20.04.
+
+Der raymaker.m war noch verbuggt. Habe eine neue Datei hochgeladen und ein Beispielvideo mit allen phi/theta-Richtungen.
+Ausgabe-Format ist in etwa so wie wir es besprochen haben.
+Eine ganz böse Lösung für Kollision/Reflektion hab ich auch gemacht, weiß noch nciht ob das so richtig ist.
