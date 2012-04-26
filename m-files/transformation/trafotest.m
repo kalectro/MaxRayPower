@@ -22,8 +22,9 @@ function trafotest
     arrow3(o',ey','',1,1);
     arrow3(o',ez','',1,1);
     arrow3(offset',e1','r',1,1);
-    arrow3(offset',e2','r',1,1);
-    arrow3(offset',e3','r',1,1);
+    arrow3(offset',e2','b',1,1);
+    arrow3(offset',e3','m',1,1);
+    
     arrow3(o',offset','g',1,1);
     hold off
     camlight

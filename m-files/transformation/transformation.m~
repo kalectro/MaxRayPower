@@ -1,0 +1,16 @@
+function [drehmatrix,offset]=transformation(fokus)
+  
+%      alpha_x=atan2(fokus(3),fokus(2))-pi;
+%      alpha_z=atan2(fokus(2),fokus(1));
+%      alpha_y=atan2(fokus(3),fokus(1))+pi/2;
+%      
+%      Rx=[1 0 0; 0 cos(alpha_x) sin(alpha_x); 0 -sin(alpha_x) cos(alpha_x)];
+%      Ry=[cos(alpha_y) 0 -sin(alpha_y);0 1 0; sin(alpha_y) 0 cos(alpha_y)];
+%      Rz=[cos(alpha_z) sin(alpha_z) 0; -sin(alpha_z) cos(alpha_z) 0; 0 0 1];
+% 
+%     drehmatrix= Rx*Ry;
+    z=-fokus/norm(fokus);
+    y=-cross([0;0;1],z)/norm(cross)
+
+    offset=fokus;
+end
