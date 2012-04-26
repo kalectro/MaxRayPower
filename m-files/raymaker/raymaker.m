@@ -5,14 +5,13 @@ function rays = raymaker(phi,theta)
 % "num_rays_per_row" in the code.
 
 % close all
+global mirr_borders mirr_radius
 
-sun_height = 100;
-x_min = -50;
-x_max = 50;
+sun_height = 4*mirr_radius;
 num_rays_per_row = 10;
 
 
-[rays_x rays_y] = meshgrid(linspace(x_min, x_max, num_rays_per_row));
+[rays_x rays_y] = meshgrid(linspace(mirr_borders(1), mirr_borders(2), num_rays_per_row));
 
 phi_rad = (phi/180)*pi;
 %phi dreht um die y-Achse
@@ -47,22 +46,22 @@ rays_x = rays_x + sun_height*(-ray_dir(1));
 rays_y = rays_y + sun_height*(-ray_dir(2));
 rays_z = rays_z + sun_height*(-ray_dir(3));
 
-% % plot
-% figure;
-% surf(rays_x,rays_y,rays_z,'EdgeColor','none', 'FaceColor', 'interp')
-% hold on
+% plot
+figure;
+surf(rays_x,rays_y,rays_z,'EdgeColor','none', 'FaceColor', 'interp')
+hold on
 % [x, y, z] = sphere(20);
-% surf(10*x, 10*y, 10*z, 'FaceColor', 'blue', 'FaceAlpha', 0.5, 'EdgeColor', 'none')
-% 
-% axis equal
-% axis(1.1*[-sun_height sun_height -sun_height x_max -0.5*sun_height sun_height])
-% 
-% arrow3([rays_x(:) rays_y(:) rays_z(:)],[rays_x(:) rays_y(:) rays_z(:)]+...
-%     repmat(sun_height*ray_dir',num_rays_per_row^2,1), 'y', 1,1)
-% 
-% camlight
-% lighting gouraud
-% hold off
+% surf(mirr_radius*x, mirr_radius*y, mirr_radius*z, 'FaceColor', 'blue', 'FaceAlpha', 0.5, 'EdgeColor', 'none')
+
+axis equal
+axis(1.1*[-sun_height sun_height -sun_height mirr_borders(2) -0.5*sun_height sun_height])
+
+arrow3([rays_x(:) rays_y(:) rays_z(:)],[rays_x(:) rays_y(:) rays_z(:)]+...
+    repmat(sun_height*ray_dir',num_rays_per_row^2,1), 'y', 1,1)
+
+camlight
+lighting gouraud
+hold off
 
 % output
 rays = zeros(3,2,num_rays_per_row^2);

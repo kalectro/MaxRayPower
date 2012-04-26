@@ -42,7 +42,7 @@ for good_ray = ind_of_rays_that_hit_it
 % plot
 hold on
 arrow3(rays(:,3,good_ray)'-10*rays(:,2,good_ray)',rays(:,3,good_ray)','g2',1,1)
-arrow3(rays(:,3,good_ray)', rays(:,3,good_ray)'+1.5*2*150*c_reflected_dir','y2',1,1)
+arrow3(rays(:,3,good_ray)', rays(:,3,good_ray)'+10*c_reflected_dir','y2',1,1)
 hold off
 camlight
 end

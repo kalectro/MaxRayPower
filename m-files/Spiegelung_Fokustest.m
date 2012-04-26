@@ -1,5 +1,5 @@
 % Skript zum Ausrechnen des Fokus f�r verschiedene Einstrahlwinkel
-close all
+% close all
 
 
 theta_vector = -90:10:0;
@@ -52,7 +52,7 @@ rays = raymaker(phi, theta);
 % Kollisionen mit Spiegel und boundaries checken.
 [rays, ind_of_rays_that_hit_it] = collision_tracker_kai(rays, handle_to_mirror_function);
 %%%%%%%%%%%%%%%%%%
-
+% break
 %%%%%%%%%%%%%%%%%% Function call!
 % Reflektierte Richtung berechnen und in rays eintragen.
 [rays] = reflection(rays, ind_of_rays_that_hit_it);
@@ -89,6 +89,7 @@ hold off
 axis vis3d image
 view(3)
 
+%wenn es keinen Fokuspunkt gibt, ist pos = [[];[];[]]
 % focus_line(:,theta_ind) = pos;
 focus_line(:,phi_ind) = pos;
 

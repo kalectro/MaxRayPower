@@ -1,4 +1,4 @@
-function [rays, ind_of_rays_that_hit_it] = collision_tracker(rays, mirr_func)
+function [rays, ind_of_rays_that_hit_it] = collision_tracker(rays, mirror)
 global mirr_borders
 
 ind_of_rays_that_hit_it = [];
@@ -62,7 +62,7 @@ for ray_ind = 1:size(rays,3)
     %Jetzt ist man mindestens an den mirror borders
     
     %geh den Strahl entlang, bis du zum ersten Mal auf den Spiegel triffst
-    while(mirr_func(c_candidate(1),c_candidate(2)) < c_candidate(3)...
+    while(mirror(c_candidate(1),c_candidate(2)) < c_candidate(3)...
             && c_length < 500) %random value!
         c_candidate = c_candidate + 0.1*c_dir;
         c_length = c_length + 0.1;
