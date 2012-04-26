@@ -57,7 +57,7 @@ axis equal
 axis(1.1*[-sun_height sun_height -sun_height mirr_borders(2) -0.5*sun_height sun_height])
 
 arrow3([rays_x(:) rays_y(:) rays_z(:)],[rays_x(:) rays_y(:) rays_z(:)]+...
-    repmat(sun_height*ray_dir',num_rays_per_row^2,1), 'y', 1,1)
+    repmat(0.5*sun_height*ray_dir',num_rays_per_row^2,1), 'y', 1,1)
 
 camlight
 lighting gouraud

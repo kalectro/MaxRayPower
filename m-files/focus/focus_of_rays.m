@@ -52,10 +52,10 @@ for ray_ind = 1:num_refl_rays
         
         
 %         plot
-        hold on
-        surf(x+c_focus_pt(1), y+c_focus_pt(2), z+c_focus_pt(3),...
-            'FaceColor', 'yellow', 'EdgeColor', 'none');
-        hold off
+%         hold on
+%         surf(x+c_focus_pt(1), y+c_focus_pt(2), z+c_focus_pt(3),...
+%             'FaceColor', 'yellow', 'EdgeColor', 'none');
+%         hold off
         
         %�ble Indizierung mit find(), geht das nicht besser?
 %         focus_pts(:,find(~any(abs(focus_pts),1),1,'first')) = c_focus_pt;

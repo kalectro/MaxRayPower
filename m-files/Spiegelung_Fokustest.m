@@ -84,7 +84,7 @@ pos = focus;
 
 % plot current focus position
 hold on
-surf(x+pos(1),y+pos(2),z+pos(3),'EdgeColor', 'none', 'FaceColor', 'red');
+surf(0.1*mirr_radius*x+pos(1),0.1*mirr_radius*y+pos(2),0.1*mirr_radius*z+pos(3),'EdgeColor', 'none', 'FaceColor', 'red');
 hold off
 axis vis3d image
 view(3)
@@ -103,4 +103,5 @@ plot3(focus_line(1,:),focus_line(2,:),focus_line(3,:),'LineWidth', 4);
 hold off
 axis vis3d image
 view(3)
+lighting gouraud
 
