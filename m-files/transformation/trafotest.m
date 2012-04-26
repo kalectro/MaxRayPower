@@ -8,11 +8,11 @@ function trafotest
     ey=[0;1;0]*4;
     ez=[0;0;1]*4;
     
-    e1=drehmatrix*ex+offset;
+    e1=drehmatrix*ex%+offset;
     norm(e1)
-    e2=drehmatrix*ey+offset;
+    e2=drehmatrix*ey%+offset;
     norm(e2)
-    e3=drehmatrix*ez+offset;
+    e3=drehmatrix*ez%+offset;
     norm(e3)
     
     figure
@@ -21,9 +21,13 @@ function trafotest
     arrow3(o',ex','',1,1);
     arrow3(o',ey','',1,1);
     arrow3(o',ez','',1,1);
-    arrow3(offset',e1','r',1,1);
-    arrow3(offset',e2','r',1,1);
-    arrow3(offset',e3','r',1,1);
+%     arrow3(offset',e1','r',1,1);
+%     arrow3(offset',e2','r',1,1);
+%     arrow3(offset',e3','m',1,1);
+    arrow3(o',e1','r',1,1);
+    arrow3(o',e2','b',1,1);
+    arrow3(o',e3','m',1,1);
+    
     arrow3(o',offset','g',1,1);
     hold off
     camlight
