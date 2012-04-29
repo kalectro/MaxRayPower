@@ -1,13 +1,11 @@
 % Skript zum Ausrechnen des Fokus fï¿½r verschiedene Einstrahlwinkel
 % close all
 
-
 theta_vector = -90:10:0;
 phi_vector = -90:10:90;
 focus_line = zeros(3,max(length(theta_vector),length(phi_vector)));
 
-%mirr_borders are quadratic
-%KantenlÃ¤nge = mirr_edge_length = 5 "=" 5meters
+%mirr_borders are rectangular
 
 global mirr_borders half_mirr_edge_length
 
@@ -25,7 +23,7 @@ handle_to_mirror_function = @mirr_func;
 pos = [0;0;0];
 
 % for theta_ind = 1:10
-% for theta_ind = 10:10
+% for theta_ind = 10
 theta_ind = 10;
 % for phi_ind = 1:length(phi_vector)
 for phi_ind = 2
@@ -54,11 +52,22 @@ rays = raymaker(phi, theta);
 [rays, ind_of_rays_that_hit_it] = collision_tracker_kai(rays, handle_to_mirror_function);
 %%%%%%%%%%%%%%%%%%
 % break
+
 %%%%%%%%%%%%%%%%%% Function call!
 % Reflektierte Richtung berechnen und in rays eintragen.
-[rays] = reflection(rays, ind_of_rays_that_hit_it);
+[rays] = reflection(rays, ind_of_rays_that_hit_it,'lol');
 %%%%%%%%%%%%%%%%%%
 
+hit_test_var = ind_of_rays_that_hit_it;
+num_collision_runs = 1;
+collision_run_limit = 10;
+% while ~isempty(hit_test_var) && (num_collision_runs < collision_run_limit)
+% %     rekursiver Aufruf, bis alle Reflektionen nicht mehr den großen
+% %     Spiegel treffen
+%     [rays, hit_test_var] = collision_tracker_kai(rays, handle_to_mirror_function);
+%     [rays] = reflection(rays, hit_test_var, 'nonverbose');
+%     num_collision_runs = num_collision_runs+1;
+% end
 
 % nicht genau genug
 %mï¿½glichkeiten der Verbesserung:
