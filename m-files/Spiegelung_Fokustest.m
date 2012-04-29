@@ -9,10 +9,11 @@ focus_line = zeros(3,max(length(theta_vector),length(phi_vector)));
 %mirr_borders are quadratic
 %Kantenlänge = mirr_edge_length = 5 "=" 5meters
 
-global mirr_borders half_mirr_edge_length mirr_radius
-half_mirr_edge_length = 1.5;
+global mirr_borders half_mirr_edge_length
+
+half_mirr_edge_length = sqrt(10)/2; %10qm Grundfl�che
 mirr_borders = [-half_mirr_edge_length half_mirr_edge_length -half_mirr_edge_length half_mirr_edge_length];
-mirr_radius = sqrt(10/pi); %10m^2 Grundfäche sind erlaubt
+mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4)-mirr_borders(3)));
 
 % min_borders = 100*[-50; -50; -100]; %x,y,z borders in a 3x1 vector
 % max_borders = 100*[50; 50; 100];
@@ -83,8 +84,9 @@ focus = focus_of_rays(rays, ind_of_rays_that_hit_it);
 pos = focus;
 
 % plot current focus position
+s_rad = 0.1*mirr_quadrat_equivalent;
 hold on
-surf(0.1*mirr_radius*x+pos(1),0.1*mirr_radius*y+pos(2),0.1*mirr_radius*z+pos(3),'EdgeColor', 'none', 'FaceColor', 'red');
+surf(s_rad*x+pos(1),s_rad*y+pos(2),s_rad*z+pos(3),'EdgeColor', 'none', 'FaceColor', 'red');
 hold off
 axis vis3d image
 view(3)

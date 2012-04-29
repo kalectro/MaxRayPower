@@ -1,8 +1,9 @@
 function focus = focus_of_rays(rays, ind_of_rays_that_hit_it)
 % 'rays' must be in the form described by "Datenformate.odt"
 
-global mirr_radius
-[x,y,z] = sphere;
+global mirr_borders
+mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4)-mirr_borders(3)));
+
 num_refl_rays = length(ind_of_rays_that_hit_it);
 focus_pts = zeros(3,num_refl_rays*(num_refl_rays-1)/2); %gauss-summe! (minus letztes Element) :) 
 
@@ -52,8 +53,10 @@ for ray_ind = 1:num_refl_rays
         
         
 %         plot
+%         s_rad = 0.1*mirr_quadrat_equivalent;
+%         [x,y,z] = sphere;
 %         hold on
-%         surf(x+c_focus_pt(1), y+c_focus_pt(2), z+c_focus_pt(3),...
+%         surf(s_rad*x+c_focus_pt(1), s_rad*y+c_focus_pt(2), s_rad*z+c_focus_pt(3),...
 %             'FaceColor', 'yellow', 'EdgeColor', 'none');
 %         hold off
         
@@ -63,8 +66,8 @@ for ray_ind = 1:num_refl_rays
         focus_ind = ray_ind - 1 + j_index +  num_refl_rays*(ray_ind-1) - (ray_ind*(ray_ind-1))/2; %ADVANCED GAUSS!!!
         
         %Begrenzung der Entfernung des zweiten Spiegels.
-        if norm(c_focus_pt) > 2*mirr_radius
-            c_focus_pt = (c_focus_pt / norm(c_focus_pt) ) * 2 * mirr_radius;
+        if norm(c_focus_pt) > 2*mirr_quadrat_equivalent
+            c_focus_pt = (c_focus_pt / norm(c_focus_pt) ) * 2 * mirr_quadrat_equivalent;
         end
         focus_pts(:,focus_ind) = c_focus_pt;
     end

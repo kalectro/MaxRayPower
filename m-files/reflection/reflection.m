@@ -1,5 +1,6 @@
 function [rays] = reflection(rays, ind_of_rays_that_hit_it)
-global mirr_radius
+global mirr_borders
+mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4)-mirr_borders(3)));
 diff_length = 0.1;
 
 for good_ray = ind_of_rays_that_hit_it
@@ -40,9 +41,10 @@ for good_ray = ind_of_rays_that_hit_it
     rays(:,4,good_ray) = c_reflected_dir;
     
 % plot
+arr_length = 0.2*mirr_quadrat_equivalent;
 hold on
-arrow3(rays(:,3,good_ray)'-mirr_radius*rays(:,2,good_ray)',rays(:,3,good_ray)','g2',1,1)
-arrow3(rays(:,3,good_ray)', rays(:,3,good_ray)'+mirr_radius*c_reflected_dir','y2',1,1)
+arrow3(rays(:,3,good_ray)'-arr_length*rays(:,2,good_ray)',rays(:,3,good_ray)','g',0.5,0.5)
+arrow3(rays(:,3,good_ray)', rays(:,3,good_ray)'+arr_length*c_reflected_dir','y',0.5,0.5)
 hold off
 camlight
 end
