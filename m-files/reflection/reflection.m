@@ -6,7 +6,7 @@ switch verbosity
     case 'nonverbose',
         verbosity = false;
     otherwise
-        error({'Falsches Eingabeargument bei reflection(~,~,v)!','verbose oder nonverbose eingeben'});
+        error('Falsches Eingabeargument bei reflection(~,~,v)! verbose oder nonverbose eingeben');
 end
 else
     verbosity = false;

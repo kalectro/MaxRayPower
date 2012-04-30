@@ -26,7 +26,7 @@ pos = [0;0;0];
 % for theta_ind = 10
 theta_ind = 10;
 % for phi_ind = 1:length(phi_vector)
-for phi_ind = 2
+for phi_ind = 5
     
 theta = theta_vector(theta_ind);
 phi = phi_vector(phi_ind);
@@ -55,19 +55,21 @@ rays = raymaker(phi, theta);
 
 %%%%%%%%%%%%%%%%%% Function call!
 % Reflektierte Richtung berechnen und in rays eintragen.
-[rays] = reflection(rays, ind_of_rays_that_hit_it,'lol');
+[rays] = reflection(rays, ind_of_rays_that_hit_it,'verbose');
 %%%%%%%%%%%%%%%%%%
 
-hit_test_var = ind_of_rays_that_hit_it;
-num_collision_runs = 1;
-collision_run_limit = 10;
-% while ~isempty(hit_test_var) && (num_collision_runs < collision_run_limit)
-% %     rekursiver Aufruf, bis alle Reflektionen nicht mehr den großen
-% %     Spiegel treffen
-%     [rays, hit_test_var] = collision_tracker_kai(rays, handle_to_mirror_function);
-%     [rays] = reflection(rays, hit_test_var, 'nonverbose');
-%     num_collision_runs = num_collision_runs+1;
-% end
+
+% forget about that! Those rays are LOST!!!! - Kai
+% hit_test_var = ind_of_rays_that_hit_it;
+% num_collision_runs = 1;
+% collision_run_limit = 10;
+% % while ~isempty(hit_test_var) && (num_collision_runs < collision_run_limit)
+% % %     rekursiver Aufruf, bis alle Reflektionen nicht mehr den großen
+% % %     Spiegel treffen
+% %     [rays, hit_test_var] = collision_tracker_kai(rays, handle_to_mirror_function);
+% %     [rays] = reflection(rays, hit_test_var, 'nonverbose');
+% %     num_collision_runs = num_collision_runs+1;
+% % end
 
 % nicht genau genug
 %mï¿½glichkeiten der Verbesserung:
@@ -103,6 +105,10 @@ view(3)
 %wenn es keinen Fokuspunkt gibt, ist pos = [[];[];[]]
 % focus_line(:,theta_ind) = pos;
 focus_line(:,phi_ind) = pos;
+
+drehmatrix = transformation(pos);
+
+
 
 drawnow
 % pause

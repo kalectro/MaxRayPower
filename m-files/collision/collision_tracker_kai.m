@@ -10,9 +10,9 @@ else
 end
 
 X = [0,0];
-options = psoptimset('TolX',0.01,'MaxIter',500,'Display','off');
+options = psoptimset('TolX',10e-3,'MaxIter',500,'Display','off');
 % options = psoptimset('MaxIter',50,'Display','off');
-tol_mirr_distance = 0.1;
+tol_mirr_distance = 10e-3;
 A=[ 1  0
    -1  0
     0  1

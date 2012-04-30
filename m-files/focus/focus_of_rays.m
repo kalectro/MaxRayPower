@@ -66,8 +66,10 @@ for ray_ind = 1:num_refl_rays
         focus_ind = ray_ind - 1 + j_index +  num_refl_rays*(ray_ind-1) - (ray_ind*(ray_ind-1))/2; %ADVANCED GAUSS!!!
         
         %Begrenzung der Entfernung des zweiten Spiegels.
-        if norm(c_focus_pt) > 2*mirr_quadrat_equivalent
-            c_focus_pt = (c_focus_pt / norm(c_focus_pt) ) * 2 * mirr_quadrat_equivalent;
+        if norm(c_focus_pt) > mirr_quadrat_equivalent
+            c_focus_pt = (c_focus_pt / norm(c_focus_pt) ) * mirr_quadrat_equivalent / 2;
+            norm(c_focus_pt)
+            mirr_quadrat_equivalent
         end
         focus_pts(:,focus_ind) = c_focus_pt;
     end

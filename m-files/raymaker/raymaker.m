@@ -12,7 +12,7 @@ sun_height = 4*mirr_quadrat_equivalent;
 num_rays_per_row = 10;
 
 
-[rays_x rays_y] = meshgrid(linspace(mirr_borders(1), mirr_borders(2), num_rays_per_row));
+[rays_x rays_y] = meshgrid(linspace(sqrt(2)*mirr_borders(1), sqrt(2)*mirr_borders(2), num_rays_per_row));
 
 phi_rad = (phi/180)*pi;
 %phi dreht um die y-Achse
