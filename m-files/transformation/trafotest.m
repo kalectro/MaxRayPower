@@ -18,6 +18,7 @@ function trafotest
     figure
     hold on
     axis([-1 2*offset(1) -1 2*offset(2) -1 2*offset(3)])
+    axis image vis3d
     arrow3(o',ex','',1,1);
     arrow3(o',ey','',1,1);
     arrow3(o',ez','',1,1);
@@ -29,6 +30,10 @@ function trafotest
     hold off
     camlight
     lighting gouraud
-    axis image vis3d
+    view(3)
+    xlabel('X')
+    ylabel('Y')
+    zlabel('Z')
+    
         
 end
