@@ -1,4 +1,4 @@
-function [reflected_rays] = reflection(rays, ind_of_rays_that_hit_it, verbosity)
+function [reflected_rays] = reflection(rays, verbosity)
 if exist('verbosity','var')
 switch verbosity
     case 'verbose',
@@ -15,8 +15,8 @@ global mirr_borders
 mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4)-mirr_borders(3)));
 reflected_rays = zeros(3,size(rays,3));
 
-for good_ray = ind_of_rays_that_hit_it
-    c_position = rays(1:2,2,good_ray); %x,y-position of current mirror collision
+for ind_ray = 1:size(rays,3)
+    c_position = rays(1:2,2,ind_ray); %x,y-position of current mirror collision
 %     c_dir = rays(:,2,good_ray);
     c_plane_normal = mirror_normal_calculator(@mirr_func,c_position);
 
@@ -25,22 +25,21 @@ for good_ray = ind_of_rays_that_hit_it
 % arrow3(rays(:,3,good_ray)',rays(:,3,good_ray)'+5*c_plane_normal','b',1,1)
 % hold off
     
-    binormal = cross(c_plane_normal,rays(:,1,good_ray));
+    binormal = cross(c_plane_normal,rays(:,1,ind_ray));
     binormal = binormal/norm(binormal);
     
     trinormal = cross(binormal, c_plane_normal);
     
-    c_reflected_dir = -c_plane_normal * dot(c_plane_normal,rays(:,1,good_ray))...
-        + trinormal*dot(trinormal, rays(:,1,good_ray));
-    
-    reflected_rays(:,good_ray) = c_reflected_dir;
+    c_reflected_dir = -c_plane_normal * dot(c_plane_normal,rays(:,1,ind_ray))...
+        + trinormal*dot(trinormal, rays(:,1,ind_ray));
+    reflected_rays(:,ind_ray) = c_reflected_dir;
     
 % plot
 if verbosity
 arr_length = 0.2*mirr_quadrat_equivalent;
 hold on
-arrow3(rays(:,2,good_ray)'-arr_length*rays(:,1,good_ray)',rays(:,2,good_ray)','g',0.5,0.5)
-arrow3(rays(:,2,good_ray)', rays(:,2,good_ray)'+arr_length*c_reflected_dir','y',0.5,0.5)
+arrow3(rays(:,2,ind_ray)'-arr_length*rays(:,1,ind_ray)',rays(:,2,ind_ray)','g',0.5,0.5)
+arrow3(rays(:,2,ind_ray)', rays(:,2,ind_ray)'+arr_length*c_reflected_dir','y',0.5,0.5)
 hold off
 camlight
 end

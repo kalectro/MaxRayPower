@@ -56,8 +56,9 @@ ray_paths = raymaker(phi, theta, num_rays_per_row);
 ray_paths(:,3,ind_of_rays_that_hit_it) = collistion_point;
 
 %%%%%%%%%%%%%%%%%% Function call!
-% Reflektierte Richtung berechnen und in rays eintragen.
-ray_paths(:,4,:) = reflection(ray_paths(:,2:3,:), ind_of_rays_that_hit_it,'verbose');
+% Reflektierte Richtung berechnen und in ray_paths eintragen.
+reflection1_direction = reflection(ray_paths(:,2:3,ind_of_rays_that_hit_it), 'verbose');
+ray_paths(:,4,ind_of_rays_that_hit_it) = reflection1_direction;
 %%%%%%%%%%%%%%%%%%
 
 
