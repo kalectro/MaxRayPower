@@ -45,7 +45,7 @@ for ray_ind = 1:size(rays,3)
     end
 end
 
-ind_of_rays_that_hit_it = collector_of_ind_of_rays_that_hit_it(1:counter);
+ind_of_rays_that_hit_it = collector_of_ind_of_rays_that_hit_it(1:(counter-1));
 
 %plot der Spiegeloberfl�che
 [rays_x rays_y] = meshgrid(linspace(mirr_borders(1), mirr_borders(2), 10));

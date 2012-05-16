@@ -37,7 +37,7 @@ old_pos = pos;
 
 %%%%%%%%%%%%%%%%%% Function call!
 % Strahlen generieren
-rays = raymaker(phi, theta);
+ray_paths = raymaker(phi, theta);
 %%%%%%%%%%%%%%%%%%
 
 %ZEITFRESSER (20sek bei 100 Strahlen)
@@ -49,14 +49,13 @@ rays = raymaker(phi, theta);
 
 %%%%%%%%%%%%%%%%%% Function call!
 % Kollisionen mit Spiegel und boundaries checken.
-[collision_point, ind_of_rays_that_hit_it] = collision_tracker_kai(rays(:,1:2,:), handle_to_mirror_function);
-rays(:,3,:) = collision_point;
+[ray_paths(:,3,:), ind_of_rays_that_hit_it] = collision_tracker_kai(ray_paths(:,1:2,:), handle_to_mirror_function);
 %%%%%%%%%%%%%%%%%%
 % break
 
 %%%%%%%%%%%%%%%%%% Function call!
 % Reflektierte Richtung berechnen und in rays eintragen.
-[rays] = reflection(rays, ind_of_rays_that_hit_it,'verbose');
+ray_paths(:,4,:) = reflection(ray_paths(:,2:3,:), ind_of_rays_that_hit_it,'verbose');
 %%%%%%%%%%%%%%%%%%
 
 
@@ -81,7 +80,7 @@ rays(:,3,:) = collision_point;
 %[0,0,0]
 %%%%%%%%%%%%%%%%%% Function call!
 % Fokuspunkt berechnen
-focus = focus_of_rays(rays, ind_of_rays_that_hit_it);
+focus = focus_of_rays(ray_paths, ind_of_rays_that_hit_it);
 %%%%%%%%%%%%%%%%%%
 
 % % Fokus out of bounds?
