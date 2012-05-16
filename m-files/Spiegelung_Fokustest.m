@@ -9,7 +9,7 @@ focus_line = zeros(3,max(length(theta_vector),length(phi_vector)));
 
 global mirr_borders half_mirr_edge_length
 
-half_mirr_edge_length = sqrt(10)/2; %10qm Grundfläche
+half_mirr_edge_length = sqrt(10)/2; %10qm Grundflï¿½che
 mirr_borders = [-half_mirr_edge_length half_mirr_edge_length -half_mirr_edge_length half_mirr_edge_length];
 mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4)-mirr_borders(3)));
 
@@ -49,7 +49,8 @@ rays = raymaker(phi, theta);
 
 %%%%%%%%%%%%%%%%%% Function call!
 % Kollisionen mit Spiegel und boundaries checken.
-[rays, ind_of_rays_that_hit_it] = collision_tracker_kai(rays, handle_to_mirror_function);
+[collision_point, ind_of_rays_that_hit_it] = collision_tracker_kai(rays(:,1:2,:), handle_to_mirror_function);
+rays(:,3,:) = collision_point;
 %%%%%%%%%%%%%%%%%%
 % break
 
@@ -64,7 +65,7 @@ rays = raymaker(phi, theta);
 % num_collision_runs = 1;
 % collision_run_limit = 10;
 % % while ~isempty(hit_test_var) && (num_collision_runs < collision_run_limit)
-% % %     rekursiver Aufruf, bis alle Reflektionen nicht mehr den großen
+% % %     rekursiver Aufruf, bis alle Reflektionen nicht mehr den groï¿½en
 % % %     Spiegel treffen
 % %     [rays, hit_test_var] = collision_tracker_kai(rays, handle_to_mirror_function);
 % %     [rays] = reflection(rays, hit_test_var, 'nonverbose');
