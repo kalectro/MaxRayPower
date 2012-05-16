@@ -1,36 +1,103 @@
-function [num_rays,angle_rays,energy,collision_point,ind_of_rays_that_hit_it] = absorber(rays, ellipt_constants, mirr_func_handle)
-if ~exist('ellipt_constants','var') || 
+function [num_rays,angle_rays,energy,collision_points,ind_of_rays_that_hit_it] = absorber(rays, ellipt_constants, mirror_handle)
+if isempty(ellipt_constants)
     ellipt_constants = [1 1 0 0 0 1]; %Kreis mit radius 1
 end
 
 energy = 0;
-X = [0,0];
+global mirr_borders
+mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4)-mirr_borders(3)));
+sun_height = 4*mirr_quadrat_equivalent;
+ind_of_rays_that_hit_it = zeros(1,size(rays,3));
 tol_mirr_distance = 10e-3;
-collector_of_ind_of_rays_that_hit_it =  zeros(1,size(rays,3));
-collector_of_collision_point = zeros(3,size(rays,3));
-num_rays = 0;
+collision_points=zeros(3,size(rays,3));
 collector_of_angle_rays = zeros(1,size(rays,3));
+num_rays = 0;
 
-options = psoptimset('TolX',tol_mirr_distance,'MaxIter',500,'Display','off');
+for ray_ind = 1:size(rays,3)
+    c_length = 0;
+    c_candidate = rays(:,1,ray_ind);
+    c_dir = rays(:,2,ray_ind);
+    c_tol_interval = 2*sun_height;
+    mirror_geschnitten = false;
 
+    if(c_candidate(3)>0)
+        %hüpf den Strahl entlang, bis du um die toleranz nah dran bist
+        while(c_tol_interval > tol_mirr_distance) %random value!
+            if(c_candidate(3) > mirror_handle(c_candidate(1),c_candidate(2)))
+                %überm spiegel
+                c_candidate = c_candidate + c_dir * (c_tol_interval/2);
+                c_length = c_length + (c_tol_interval/2);
+                c_tol_interval = c_tol_interval / 2;
+            else
+                mirror_geschnitten = true;
+                %unterm spiegel
+                c_candidate = c_candidate - c_dir * (c_tol_interval/2);
+                c_length = c_length - (c_tol_interval/2);
+                c_tol_interval = c_tol_interval / 2;
+            end
+        end
 
-for ray_ind = 1:size(rays,3)   
-    ray = rays(:,:,ray_ind);
-    %elliptische borders
-    [X,FVAL,~,OUTPUT] = patternsearch(@(x)distance_ray_mirror_anonym(x,ray,mirr_func_handle),...
-        X,[],[],[],[],[],[],@(x)NONLCON_ellipse(x,ellipt_constants), options);
-
-     
-    if FVAL < tol_mirr_distance*2
-        num_rays = num_rays+1;
-        c_plane_normal = mirror_normal_calculator(mirr_func_handle,X);
-        collector_of_angle_rays(num_rays) = 180*dot(c_plane_normal,-ray(:,2))/pi;
-        collector_of_ind_of_rays_that_hit_it(num_rays) = ray_ind;
-        collector_of_collision_point(:,num_rays) = [X(1);X(2);mirr_func_handle(X(1),X(2))];
+        %Wenn der Treffpunkt immernoch innerhalb der Grenzen: good ray!
+        if(NONLCON_ellipse(c_candidate,ellipt_constants) <= 0 &&...
+            mirror_geschnitten)
+        
+            num_rays = num_rays+1;
+            collision_points(:,num_rays) = c_candidate;
+            ind_of_rays_that_hit_it(num_rays) = ray_ind;
+            c_plane_normal = mirror_normal_calculator(mirror_handle,c_candidate);
+            collector_of_angle_rays(num_rays) = 180*acos(dot(c_plane_normal,-c_dir))/pi;
+        end
+        collision_points = collision_points(:,1:num_rays);
+        ind_of_rays_that_hit_it = ind_of_rays_that_hit_it(1:num_rays);
+        angle_rays = collector_of_angle_rays(1:num_rays);
     end
 end
+%%
+% X = [0,0];
+% tol_mirr_distance = 10e-3;
+% collector_of_ind_of_rays_that_hit_it =  zeros(1,size(rays,3));
+% collector_of_collision_point = zeros(3,size(rays,3));
+% num_rays = 0;
+% collector_of_angle_rays = zeros(1,size(rays,3));
+% 
+% options = psoptimset('TolX',tol_mirr_distance,'MaxIter',50,'Display','off'); %MaxIter auf 50, vllt ärgert er sich dann nciht so lange mit den Rändern rum
+% 
+% 
+% for ray_ind = 1:size(rays,3)   
+%     ray = rays(:,:,ray_ind);
+%     %elliptische borders
+%     [X,FVAL,~,OUTPUT] = patternsearch(@(x)distance_ray_mirror_anonym(x,ray,mirr_func_handle),...
+%         X,[],[],[],[],[],[],@(x)NONLCON_ellipse(x,ellipt_constants), options);
+% 
+%     if FVAL < tol_mirr_distance*2
+%         num_rays = num_rays+1;
+%         c_plane_normal = mirror_normal_calculator(mirr_func_handle,X);
+%         collector_of_angle_rays(num_rays) = 180*dot(c_plane_normal,-ray(:,2))/pi;
+%         collector_of_ind_of_rays_that_hit_it(num_rays) = ray_ind;
+%         collector_of_collision_point(:,num_rays) = [X(1);X(2);mirr_func_handle(X(1),X(2))];
+%     end
+% end
+%
+% ind_of_rays_that_hit_it = collector_of_ind_of_rays_that_hit_it(1:num_rays);
+% angle_rays = collector_of_angle_rays(1:num_rays);
+% collision_point = collector_of_collision_point(:,1:num_rays);
+%%
 
-ind_of_rays_that_hit_it = collector_of_ind_of_rays_that_hit_it(1:num_rays);
-angle_rays = collector_of_angle_rays(1:num_rays);
-collision_point = collector_of_collision_point(:,1:num_rays);
+%plot
+hold on
+circle_coord = zeros(360,3);
+r=ellipt_constants(6);
+for phi_circle = 1:360
+    circle_coord(phi_circle,1) = r*cos(pi*phi_circle/180);
+    circle_coord(phi_circle,2) = r*sin(pi*phi_circle/180);
+    circle_coord(phi_circle,3) = mirror_handle(circle_coord(phi_circle,1),circle_coord(phi_circle,2));
+end
+patch(circle_coord(:,1),circle_coord(:,2),circle_coord(:,3),'b')
+
+rays_2d = zeros(3,num_rays);
+rays_2d(:,:) = rays(:,2,ind_of_rays_that_hit_it);
+
+arrow3(collision_points'-rays_2d',collision_points','y',1,1)
+
+
 end
