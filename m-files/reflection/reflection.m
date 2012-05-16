@@ -13,29 +13,11 @@ else
 end
 global mirr_borders
 mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4)-mirr_borders(3)));
-diff_length = 0.1;
 
 for good_ray = ind_of_rays_that_hit_it
     c_position = rays(1:2,3,good_ray); %x,y-position of current mirror collision
 %     c_dir = rays(:,2,good_ray);
-    
-    x_grad = [ c_position(1)+diff_length/2
-               c_position(2)
-               mirr_func(c_position(1)+diff_length/2,c_position(2))] ...
-               -...
-             [ c_position(1)-diff_length/2
-               c_position(2)
-               mirr_func(c_position(1)-diff_length/2,c_position(2))];
-    y_grad = [ c_position(1)
-               c_position(2)+diff_length/2
-               mirr_func(c_position(1),c_position(2)+diff_length/2)] ...
-               -...
-             [ c_position(1)
-               c_position(2)-diff_length/2
-               mirr_func(c_position(1),c_position(2)-diff_length/2)];
-           
-    c_plane_normal = cross(x_grad, y_grad);
-    c_plane_normal = c_plane_normal / norm(c_plane_normal);
+    c_plane_normal = mirror_normal_calculator(@mirr_func,c_position);
 
 % % plot
 % hold on
