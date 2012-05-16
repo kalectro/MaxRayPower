@@ -1,6 +1,5 @@
 function [collision_point, ind_of_rays_that_hit_it] = collision_tracker_kai(rays, mirror)
 global mirr_borders
-collector_of_ind_of_rays_that_hit_it = [];
 
 % if ~exist('ind_of_rays_that_hit_it','var')
 %     ind_of_rays_that_hit_it = [];
@@ -24,6 +23,8 @@ b = [ mirr_borders(2)
       mirr_borders(4)
     ];
 collision_point = zeros(3,size(rays,3));
+collector_of_ind_of_rays_that_hit_it = zeros(size(rays,3));
+counter = 1;
 for ray_ind = 1:size(rays,3)   
     ray = rays(:,:,ray_ind);
     %kreisf�rmige borders
@@ -38,12 +39,13 @@ for ray_ind = 1:size(rays,3)
 %     FVAL
      
     if FVAL < tol_mirr_distance
-        collector_of_ind_of_rays_that_hit_it = [collector_of_ind_of_rays_that_hit_it ray_ind];
+        collector_of_ind_of_rays_that_hit_it(counter) = ray_ind;
+        counter = counter + 1;
         collision_point(:,ray_ind) = [X(1);X(2);mirror(X(1),X(2))];
     end
 end
 
-ind_of_rays_that_hit_it = collector_of_ind_of_rays_that_hit_it;
+ind_of_rays_that_hit_it = collector_of_ind_of_rays_that_hit_it(1:counter);
 
 %plot der Spiegeloberfl�che
 [rays_x rays_y] = meshgrid(linspace(mirr_borders(1), mirr_borders(2), 10));
