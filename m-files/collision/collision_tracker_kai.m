@@ -41,13 +41,13 @@ for ray_ind = 1:size(rays,3)
      
     if FVAL < tol_mirr_distance*2
         collector_of_ind_of_rays_that_hit_it(counter) = ray_ind;
+        collision_point(:,counter) = [X(1);X(2);mirror(X(1),X(2))];
         counter = counter + 1;
-        collision_point(:,ray_ind) = [X(1);X(2);mirror(X(1),X(2))];
     end
 end
 
 ind_of_rays_that_hit_it = collector_of_ind_of_rays_that_hit_it(1:(counter-1));
-
+collision_point =collision_point(:,1:counter-1);
 %plot der Spiegeloberfl�che
 [rays_x rays_y] = meshgrid(linspace(mirr_borders(1), mirr_borders(2), 10));
 mirror_surface = zeros(10);

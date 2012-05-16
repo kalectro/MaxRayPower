@@ -50,9 +50,10 @@ ray_paths = raymaker(phi, theta, num_rays_per_row);
 
 %%%%%%%%%%%%%%%%%% Function call!
 % Kollisionen mit Spiegel und boundaries checken.
-[ray_paths(:,3,:), ind_of_rays_that_hit_it] = collision_tracker_kai(ray_paths(:,1:2,:), handle_to_mirror_function);
+[collistion_point, ind_of_rays_that_hit_it] = collision_tracker_kai(ray_paths(:,1:2,:), handle_to_mirror_function);
 %%%%%%%%%%%%%%%%%%
 % break
+ray_paths(:,3,ind_of_rays_that_hit_it) = collistion_point;
 
 %%%%%%%%%%%%%%%%%% Function call!
 % Reflektierte Richtung berechnen und in rays eintragen.
