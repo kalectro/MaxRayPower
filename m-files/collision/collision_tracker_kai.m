@@ -1,6 +1,8 @@
 function [collision_point, ind_of_rays_that_hit_it] = collision_tracker_kai(rays, mirror)
 global mirr_borders
 
+tol_mirr_distance = 10e-3;
+
 % if ~exist('ind_of_rays_that_hit_it','var')
 %     ind_of_rays_that_hit_it = [];
 %     indices = 1:size(rays,3);
@@ -9,9 +11,8 @@ global mirr_borders
 % end
 
 X = [0,0];
-options = psoptimset('TolX',10e-3,'MaxIter',500,'Display','off');
+options = psoptimset('TolX',tol_mirr_distance,'MaxIter',500,'Display','off');
 % options = psoptimset('MaxIter',50,'Display','off');
-tol_mirr_distance = 10e-3;
 A=[ 1  0
    -1  0
     0  1
@@ -38,7 +39,7 @@ for ray_ind = 1:size(rays,3)
 %     OUTPUT
 %     FVAL
      
-    if FVAL < tol_mirr_distance
+    if FVAL < tol_mirr_distance*2
         collector_of_ind_of_rays_that_hit_it(counter) = ray_ind;
         counter = counter + 1;
         collision_point(:,ray_ind) = [X(1);X(2);mirror(X(1),X(2))];
