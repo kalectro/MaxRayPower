@@ -1,5 +1,5 @@
 function [num_rays,angle_rays,energy,collision_point,ind_of_rays_that_hit_it] = absorber(rays, ellipt_constants, mirr_func_handle)
-if ~exist('ellipt_constants','var')
+if ~exist('ellipt_constants','var') || 
     ellipt_constants = [1 1 0 0 0 1]; %Kreis mit radius 1
 end
 
@@ -14,33 +14,14 @@ collector_of_angle_rays = zeros(1,size(rays,3));
 options = psoptimset('TolX',tol_mirr_distance,'MaxIter',500,'Display','off');
 
 
-% A=[ 1  0
-%    -1  0
-%     0  1
-%     0 -1    
-%   ];
-% b = [ mirr_borders(2)
-%       mirr_borders(2)
-%       mirr_borders(4)
-%       mirr_borders(4)
-%     ];
-
-
 for ray_ind = 1:size(rays,3)   
     ray = rays(:,:,ray_ind);
-    %kreisfoermige borders
+    %elliptische borders
     [X,FVAL,~,OUTPUT] = patternsearch(@(x)distance_ray_mirror_anonym(x,ray,mirr_func_handle),...
         X,[],[],[],[],[],[],@(x)NONLCON_ellipse(x,ellipt_constants), options);
 
-%     %quadratische borders
-%     [X,FVAL,~,OUTPUT] = patternsearch(@(x)distance_ray_mirror_anonym(x,ray,mirror),...
-%         X,A,b,[],[],[],[],[], options);
-
-%      X
-%     OUTPUT
-%     FVAL
      
-    if FVAL < tol_mirr_distance
+    if FVAL < tol_mirr_distance*2
         num_rays = num_rays+1;
         c_plane_normal = mirror_normal_calculator(mirr_func_handle,X);
         collector_of_angle_rays(num_rays) = 180*dot(c_plane_normal,-ray(:,2))/pi;
