@@ -40,9 +40,14 @@ for ray_ind = 1:size(rays,3)
 %     FVAL
      
     if FVAL < tol_mirr_distance*2
-        collector_of_ind_of_rays_that_hit_it(counter) = ray_ind;
-        collision_point(:,counter) = [X(1);X(2);mirror(X(1),X(2))];
-        counter = counter + 1;
+        strahl = ray(:,2);
+        normale = mirror_normal_calculator(mirror,X);
+        right_side=collision_direction(strahl,normale);
+        if right_side
+            collector_of_ind_of_rays_that_hit_it(counter) = ray_ind;
+            collision_point(:,counter) = [X(1);X(2);mirror(X(1),X(2))];     
+            counter = counter + 1;
+        end
     end
 end
 
