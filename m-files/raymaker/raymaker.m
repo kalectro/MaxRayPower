@@ -1,4 +1,4 @@
-function rays = raymaker(phi,theta)
+function rays = raymaker(phi,theta,num_rays_per_row)
 % Example: raymaker(20,10) produces a regular matrix of rays. They are
 % shifted 'phi'=20 degrees around the y- and 'theta'=10 degrees around the
 % x-axis (twisted-right-hand-rule). Adjust the number of rays by changing the variable
@@ -9,7 +9,6 @@ global mirr_borders
 mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4)-mirr_borders(3)));
 
 sun_height = 4*mirr_quadrat_equivalent;
-num_rays_per_row = 10;
 
 
 [rays_x rays_y] = meshgrid(linspace(sqrt(2)*mirr_borders(1), sqrt(2)*mirr_borders(2), num_rays_per_row));
@@ -19,7 +18,7 @@ phi_rad = (phi/180)*pi;
 R_phi = [   cos(phi_rad)  0 sin(phi_rad)
             0             1 0
             -sin(phi_rad) 0 cos(phi_rad)];
-% v_neu = R * v Zeile für Zeile:
+% v_neu = R * v Zeile fï¿½r Zeile:
 rays_x_new = R_phi(1,1)*rays_x;
 % rays_y = rays_y;
 rays_z = R_phi(3,1)*rays_x;
@@ -32,7 +31,7 @@ R_theta = [ 1   0   0
             0   cos(theta_rad)  -sin(theta_rad)
             0   sin(theta_rad)  cos(theta_rad)
             ];
-% v_neu = R * v Zeile für Zeile:
+% v_neu = R * v Zeile fï¿½r Zeile:
 % rays_x = rays_x;
 rays_y_new = R_theta(2,2)*rays_y + R_theta(2,3)*rays_z;
 rays_z = R_theta(3,2)*rays_y + R_theta(3,3)*rays_z;

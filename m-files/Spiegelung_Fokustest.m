@@ -3,6 +3,7 @@
 
 theta_vector = -90:10:0;
 phi_vector = -90:10:90;
+num_rays_per_row = 10;
 focus_line = zeros(3,max(length(theta_vector),length(phi_vector)));
 
 %mirr_borders are rectangular
@@ -37,7 +38,7 @@ old_pos = pos;
 
 %%%%%%%%%%%%%%%%%% Function call!
 % Strahlen generieren
-ray_paths = raymaker(phi, theta);
+ray_paths = raymaker(phi, theta, num_rays_per_row);
 %%%%%%%%%%%%%%%%%%
 
 %ZEITFRESSER (20sek bei 100 Strahlen)
