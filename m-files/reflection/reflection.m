@@ -16,6 +16,18 @@ mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4
 reflected_rays = zeros(3,size(rays,3));
 
 for ind_ray = 1:size(rays,3)
+    %this used to be horribly wrong! it was c_position = rays(1:2,2,ind_ray);
+    %that means it ... ah moment deutsch geht ja auch! Er hat hier immer
+    %Spalte 2 genommen, also die Richtung anstatt der Kollisionsposition...
+    %He moment, der letzte der an reflection was gemacht hat war doch...
+    %der kai! zeige dich! :-P
+    %ah nee moment es werden ja nciht die paths übergeben sondern ein
+    %ray... aber trotzdem sollte dann die erste Spalte genommen werden
+    %oder?
+    %Ah wait, es wird ja im Spiegelung_Fokustest als erste Spalte die
+    %Richtung und als Zweite Spalte die Kollisionsposition übergeben...
+    %oookay ;) dann stimmt ja Spalte 2. Scheint so als müsste ich jetzt
+    %einen riesigen Kommentar commiten ;)
     c_position = rays(1:2,2,ind_ray); %x,y-position of current mirror collision
 %     c_dir = rays(:,2,good_ray);
     c_plane_normal = mirror_normal_calculator(@mirr_func,c_position);
