@@ -1,10 +1,24 @@
-function rays = raymaker(phi,theta,num_rays_per_row)
+function rays = raymaker(phi,theta,num_rays_per_row, verbosity)
 % Example: raymaker(20,10) produces a regular matrix of rays. They are
 % shifted 'phi'=20 degrees around the y- and 'theta'=10 degrees around the
 % x-axis (twisted-right-hand-rule). Adjust the number of rays by changing the variable
 % "num_rays_per_row" in the code.
 
 % close all
+
+if exist('verbosity','var')
+switch verbosity
+    case 'verbose',
+        verbosity = true;
+    case 'nonverbose',
+        verbosity = false;
+    otherwise
+        error('Falsches Eingabeargument bei reflection(~,~,v)! verbose oder nonverbose eingeben');
+end
+else
+    verbosity = false;
+end
+
 global mirr_borders
 mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4)-mirr_borders(3)));
 
@@ -47,20 +61,21 @@ rays_y = rays_y + sun_height*(-ray_dir(2));
 rays_z = rays_z + sun_height*(-ray_dir(3));
 
 % plot
-figure;
-surf(rays_x,rays_y,rays_z,'EdgeColor','none', 'FaceColor', 'interp')
-hold on
+if verbosity
+    figure;
+    surf(rays_x,rays_y,rays_z,'EdgeColor','none', 'FaceColor', 'interp')
+    hold on
 
-axis equal
-axis(1.1*[-sun_height sun_height -sun_height mirr_borders(2) -0.5*sun_height sun_height])
+    axis equal
+    axis(1.1*[-sun_height sun_height -sun_height mirr_borders(2) -0.5*sun_height sun_height])
 
-arrow3([rays_x(:) rays_y(:) rays_z(:)],[rays_x(:) rays_y(:) rays_z(:)]+...
-    repmat(0.5*sun_height*ray_dir',num_rays_per_row^2,1), 'y', 1,1)
+    arrow3([rays_x(:) rays_y(:) rays_z(:)],[rays_x(:) rays_y(:) rays_z(:)]+...
+        repmat(0.5*sun_height*ray_dir',num_rays_per_row^2,1), 'y', 1,1)
 
-camlight
-lighting gouraud
-hold off
-
+    camlight
+    lighting gouraud
+    hold off
+end
 % output
 rays = zeros(3,2,num_rays_per_row^2);
 % Zeilen: x,y,z Koordinate;
