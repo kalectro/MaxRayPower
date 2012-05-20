@@ -11,18 +11,13 @@ focus_line = zeros(3,max(length(theta_vector),length(phi_vector)));
 
 global mirr_borders half_mirr_edge_length
 
-half_mirr_edge_length = sqrt(10)/2; %10qm Grundflï¿½che
+half_mirr_edge_length = sqrt(10)/2; %10qm Grundflaeche
 mirr_borders = [-half_mirr_edge_length half_mirr_edge_length -half_mirr_edge_length half_mirr_edge_length];
 mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4)-mirr_borders(3)));
 
-% min_borders = 100*[-50; -50; -100]; %x,y,z borders in a 3x1 vector
-% max_borders = 100*[50; 50; 100];
-
 [x,y,z] = sphere;
-[x_grid, y_grid] = meshgrid(linspace(mirr_borders(1),mirr_borders(2),10));
-mirror = zeros(size(x_grid));
 handle_to_mirror_function = @mirr_func;
-pos = [0;0;0];
+
 
 % for theta_ind = 1:10
 % for theta_ind = 10
@@ -33,9 +28,6 @@ for phi_ind = 5
 theta = theta_vector(theta_ind);
 phi = phi_vector(phi_ind);
 
-old_pos = pos;
-% old_small_mirr_plane_normal = small_mirr_plane_normal;
-
 
 %%%%%%%%%%%%%%%%%% Function call!
 % Strahlen generieren
@@ -44,17 +36,17 @@ ray_paths = raymaker(phi, theta, num_rays_per_row);
 
 %ZEITFRESSER (20sek bei 100 Strahlen)
 %Verbesserung 23.04. ->> 5,3sek bei 100 Strahlen
-%Weitere Verbesserung mï¿½glich:
-%   1. Spiegel-z-Hï¿½he begrenzen
-%   2. Analytische Lï¿½sung fï¿½r t, erste Nullstele mit NewtonRaphson finden,
+%Verbesserung 20.05. ->> 0,1sek bei 100 Strahlen
+%Weitere Verbesserung moeglich:
+%   1. Spiegel-z-Hoehe begrenzen
+%   2. Analytische Loesung fuer t, erste Nullstele mit NewtonRaphson finden,
 %      und dann Treffer von oben/unten unterscheiden
-
 %%%%%%%%%%%%%%%%%% Function call!
 % Kollisionen mit Spiegel und boundaries checken.
-[collistion_point, ind_of_rays_that_hit_it] = collision_tracker_goldenratio(ray_paths(:,1:2,:), handle_to_mirror_function);
+[collision_points, ind_of_rays_that_hit_it] = collision_tracker_dychotom(ray_paths(:,1:2,:), handle_to_mirror_function);
 %%%%%%%%%%%%%%%%%%
-% break
-ray_paths(:,3,ind_of_rays_that_hit_it) = collistion_point;
+
+ray_paths(:,3,ind_of_rays_that_hit_it) = collision_points;
 
 %%%%%%%%%%%%%%%%%% Function call!
 % Reflektierte Richtung berechnen und in ray_paths eintragen.
@@ -63,40 +55,22 @@ ray_paths(:,4,ind_of_rays_that_hit_it) = reflection1_direction;
 %%%%%%%%%%%%%%%%%%
 
 
-% forget about that! Those rays are LOST!!!! - Kai
-% hit_test_var = ind_of_rays_that_hit_it;
-% num_collision_runs = 1;
-% collision_run_limit = 10;
-% % while ~isempty(hit_test_var) && (num_collision_runs < collision_run_limit)
-% % %     rekursiver Aufruf, bis alle Reflektionen nicht mehr den groï¿½en
-% % %     Spiegel treffen
-% %     [rays, hit_test_var] = collision_tracker_kai(rays, handle_to_mirror_function);
-% %     [rays] = reflection(rays, hit_test_var, 'nonverbose');
-% %     num_collision_runs = num_collision_runs+1;
-% % end
-
-% nicht genau genug
-%mï¿½glichkeiten der Verbesserung:
-%1. Schnitte von Schlï¿½uchen in einer MxNxP - Matrix (Hough)
+%Zeitfresser
+%Moeglichkeiten der Verbesserung:
+%1. Schnitte von Schlaeuchen in einer MxNxP - Matrix (Hough)
 %2. Gewichtung von Fokuspunkten nach: nahe Nachbarn: gut!, nachbarn weit
-%weg: bï¿½se! (z.B weight = sum(1/dist_to_neighbor_i)) over i
-%3. notwendig: Begrenzung des maximalen Abstands des kleinen spiegels von
-%[0,0,0]
+%weg: boese! (z.B weight = sum(1/dist_to_neighbor_i)) over i
+%3. Gegen das Zeitfressen: jeder Strahl berechnet seinen Schnitt nur mit den
+%10 Strahlen, die ihm am nächsten sind, bzw die ihm näher als xy cm sind
 %%%%%%%%%%%%%%%%%% Function call!
 % Fokuspunkt berechnen
 focus = focus_of_rays(ray_paths, ind_of_rays_that_hit_it);
 %%%%%%%%%%%%%%%%%%
 
-% % Fokus out of bounds?
-% if( any( focus < min_borders | focus > max_borders) )
-%     pos = old_pos;
-% %     small_mirr_plane_normal = old_small_mirr_plane_normal;
-% else
-%     pos = focus;
-% %     small_mirr_plane_normal = - focus/norm(focus);
-% end
-
 pos = focus;
+%wenn es keinen Fokuspunkt gibt, ist pos = [[];[];[]]
+% focus_line(:,theta_ind) = pos;
+focus_line(:,phi_ind) = pos;
 
 % plot current focus position
 s_rad = 0.1*mirr_quadrat_equivalent;
@@ -106,16 +80,16 @@ hold off
 axis vis3d image
 view(3)
 
-%wenn es keinen Fokuspunkt gibt, ist pos = [[];[];[]]
-% focus_line(:,theta_ind) = pos;
-focus_line(:,phi_ind) = pos;
-
+%Drehmatrix
 drehmatrix = transformation(pos);
 
+%kleiner Spiegel
+
+
+%Absorption
 
 
 drawnow
-% pause
 end
 
 % plot connecting line of all focus points
