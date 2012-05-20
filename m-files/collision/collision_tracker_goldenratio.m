@@ -53,10 +53,11 @@ for ray_ind = 1:size(rays,3)
                 ind_of_rays_that_hit_it(num_rays) = ray_ind;
             end
         end
-        collision_points = collision_points(:,1:num_rays);
-        ind_of_rays_that_hit_it = ind_of_rays_that_hit_it(1:num_rays);
     end
 end
+% Matricen nur so groß wie sie auch sein müssen (alle 0er raus)
+collision_points= collision_points(:,1:num_rays);
+ind_of_rays_that_hit_it = ind_of_rays_that_hit_it(1:num_rays);
 
 %plot der Spiegeloberflï¿½che
 [rays_x rays_y] = meshgrid(linspace(mirr_borders(1), mirr_borders(2), 10));
