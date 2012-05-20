@@ -1,8 +1,17 @@
+% Funktion liefert Stütz- und Richtungsvektoren reflektierter Strahlen
+
+% Parameter:
+%             rays             : Stütz- und Richtungsvektoren einfallender Strahlen
+%             collision_points : Treffpunkte am Spigel
+%             mirr_func        : Handler der Spiegelfunktion
+% Rückgabe:
+%             reflected_rays   : Stütz- und Richtungsvektoren reflektierter Strahlen
+
 function [reflected_rays]=reflection_m(rays, collision_points, mirr_func)
     reflected_rays=zeros(3,2,length(rays(1,1,:))); % Ausgabe vorbereiten
     
     for i=1:length(rays(1,1,:))
-        c_plane_normal = mirror_normal_calculator(mirr_func,rays(1:2,1,i)); % Normale im Kollisionspunkt
+        c_plane_normal = mirror_normal_calculator(mirr_func,collision_points(1:2,i)); % Normale im Kollisionspunkt
         
         % ab hier aus der reflection-Funktion von Felix übernommen (ohne gegencheck)
         % @FELIX: habe jedoch aus 1 überall 2 gemacht, da ich den
