@@ -2,6 +2,18 @@ function [num_rays,angle_rays,energy,collision_points,ind_of_rays_that_hit_it] =
 if isempty(ellipt_constants)
     ellipt_constants = [1 1 0 0 0 1]; %Kreis mit radius 1
 end
+if exist('verbosity','var')
+switch verbosity
+    case 'verbose',
+        verbosity = true;
+    case 'nonverbose',
+        verbosity = false;
+    otherwise
+        error('Falsches Eingabeargument bei reflection(~,~,v)! verbose oder nonverbose eingeben');
+end
+else
+    verbosity = false;
+end
 
 energy = 0;
 global mirr_borders
@@ -50,25 +62,38 @@ for ray_ind = 1:size(rays,3)
     end
 end
 
+%Prunen der Ergebnisvektoren
 collision_points = collision_points(:,1:num_rays);
 ind_of_rays_that_hit_it = ind_of_rays_that_hit_it(1:num_rays);
 angle_rays = collector_of_angle_rays(1:num_rays);
 
-%plot a circle and hitting rays
-hold on
-circle_coord = zeros(360,3);
-r=ellipt_constants(6);
-for phi_circle = 1:360
-    circle_coord(phi_circle,1) = r*cos(pi*phi_circle/180);
-    circle_coord(phi_circle,2) = r*sin(pi*phi_circle/180);
-    circle_coord(phi_circle,3) = mirror_handle(circle_coord(phi_circle,1),circle_coord(phi_circle,2));
+%Berechnung der kumulativen Strahlenenergie
+for i = 1:num_rays
+    %In angle_rays steht der Winkel relativ zur Normalen des Spiegels.
+    %Dieser wird in den radian-Wert umgerechnet und als cosinus zur Energie
+    %hinzugefügt. Daraus ergibt sich, dass senkrechte Strahlen die Energie
+    %1 und Strahlen parallel zur Spiegeloberfläche die Energie 0 besitzen.
+    energy = energy + cos(pi*angle_rays(i)/180);
 end
-patch(circle_coord(:,1),circle_coord(:,2),circle_coord(:,3),'b')
 
-ray_dirs = zeros(3,num_rays);
-ray_dirs(:,:) = rays(:,2,ind_of_rays_that_hit_it);
 
-arrow3(collision_points'-ray_dirs',collision_points','y',1,1)
-hold off
+%plot a circle and hitting rays
+if ~(num_rays == 0) && verbosity
+    hold on
+    circle_coord = zeros(360,3);
+    r=ellipt_constants(6);
+    for phi_circle = 1:360
+        circle_coord(phi_circle,1) = r*cos(pi*phi_circle/180);
+        circle_coord(phi_circle,2) = r*sin(pi*phi_circle/180);
+        circle_coord(phi_circle,3) = mirror_handle(circle_coord(phi_circle,1),circle_coord(phi_circle,2));
+    end
+    patch(circle_coord(:,1),circle_coord(:,2),circle_coord(:,3),'b')
 
+    ray_dirs = zeros(3,num_rays);
+    ray_dirs(:,:) = rays(:,2,ind_of_rays_that_hit_it);
+
+    axis vis3d image
+    arrow3(collision_points'-ray_dirs',collision_points','y',1,1)
+    hold off
+end
 end
