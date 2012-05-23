@@ -18,6 +18,9 @@ mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4
 [x,y,z] = sphere;
 handle_to_mirror_function = @mirr_func;
 
+%parameter für die Form der Absorberellipse
+ellipt_parameters = [1 1 0 0 0 0.1];
+
 
 % for theta_ind = 1:10
 % for theta_ind = 10
@@ -87,7 +90,8 @@ drehmatrix = transformation(pos);
 
 
 %Absorption
-
+[num_rays,angle_rays,energy,absorption_point,ind_of_rays_that_are_absorbed] = absorber(ray_paths(:,(end-1):end,ind_of_rays_that_hit_it), ellipt_parameters, handle_to_mirror_function);
+disp(['Anzahl absorbierter Strahlen: ' int2str(num_rays)])
 
 drawnow
 end
