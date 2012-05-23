@@ -1,4 +1,4 @@
-function [reflected_rays] = reflection(rays, verbosity)
+function [reflected_rays] = reflection(rays, mirror_function_handle, verbosity)
 if exist('verbosity','var')
 switch verbosity
     case 'verbose',
@@ -30,7 +30,7 @@ for ind_ray = 1:size(rays,3)
     %einen riesigen Kommentar commiten ;)
     c_position = rays(1:2,2,ind_ray); %x,y-position of current mirror collision
 %     c_dir = rays(:,2,good_ray);
-    c_plane_normal = mirror_normal_calculator(@mirr_func,c_position);
+    c_plane_normal = mirror_normal_calculator(mirror_function_handle,c_position);
 
 % % plot
 % hold on

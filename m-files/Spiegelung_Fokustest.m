@@ -1,10 +1,10 @@
 function Spiegelung_Fokustest
 % function zum Ausrechnen des Fokus für verschiedene Einstrahlwinkel
-% close all
+ close all
 
 theta_vector = -90:10:0;
 phi_vector = -90:10:90;
-num_rays_per_row = 10;
+num_rays_per_row = 20;
 focus_line = zeros(3,max(length(theta_vector),length(phi_vector)));
 
 %mirr_borders are rectangular
@@ -34,12 +34,13 @@ phi = phi_vector(phi_ind);
 
 %%%%%%%%%%%%%%%%%% Function call!
 % Strahlen generieren
-ray_paths = raymaker(phi, theta, num_rays_per_row);
+ray_paths = raymaker(phi, theta, num_rays_per_row,'verbose');
 %%%%%%%%%%%%%%%%%%
 
 %ZEITFRESSER (20sek bei 100 Strahlen)
 %Verbesserung 23.04. ->> 5,3sek bei 100 Strahlen
 %Verbesserung 20.05. ->> 0,1sek bei 100 Strahlen
+%Verbesserung 23.05. ->> 4  sek bei 16000 Strahlen
 %Weitere Verbesserung moeglich:
 %   1. Spiegel-z-Hoehe begrenzen
 %   2. Analytische Loesung fuer t, erste Nullstele mit NewtonRaphson finden,
@@ -53,7 +54,7 @@ ray_paths(:,3,ind_of_rays_that_hit_it) = collision_points;
 
 %%%%%%%%%%%%%%%%%% Function call!
 % Reflektierte Richtung berechnen und in ray_paths eintragen.
-reflection1_direction = reflection(ray_paths(:,2:3,ind_of_rays_that_hit_it), 'nonverbose');
+reflection1_direction = reflection(ray_paths(:,2:3,ind_of_rays_that_hit_it),handle_to_mirror_function, 'verbose');
 ray_paths(:,4,ind_of_rays_that_hit_it) = reflection1_direction;
 %%%%%%%%%%%%%%%%%%
 
