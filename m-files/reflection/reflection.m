@@ -13,8 +13,12 @@ else
 end
 global mirr_borders
 mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4)-mirr_borders(3)));
+sun_height = 4*mirr_quadrat_equivalent;
 reflected_rays = zeros(3,size(rays,3));
 
+axis equal
+axis(1.1*[-sun_height sun_height -sun_height mirr_borders(2) -0.5*sun_height sun_height])
+    
 for ind_ray = 1:size(rays,3)
     %this used to be horribly wrong! it was c_position = rays(1:2,2,ind_ray);
     %that means it ... ah moment deutsch geht ja auch! Er hat hier immer
@@ -53,7 +57,7 @@ hold on
 arrow3(rays(:,2,ind_ray)'-arr_length*rays(:,1,ind_ray)',rays(:,2,ind_ray)','g',0.5,0.5)
 arrow3(rays(:,2,ind_ray)', rays(:,2,ind_ray)'+arr_length*c_reflected_dir','y',0.5,0.5)
 hold off
-camlight
+% camlight
 end
 
 end
