@@ -14,7 +14,7 @@ function [rays_from_mirror,new_focus]=smallmirrorreflection(rays_to_mirror,focus
     end
     
     % Strahlen mit dem kleinen Spiegel kollidieren
-    [collision_points,ind_rays_that_hit_it]=collision_tracker_kai(rays_to_mirror,small_mirr_hand);
+    [collision_points,ind_rays_that_hit_it]=collision_tracker_dychotom(rays_to_mirror,small_mirr_hand);
     
     % Strahlen am kleinen Spiegel reflektieren
     tmp=zeros(3,2,length(ind_rays_that_hit_it)); % Matrix mit Strahlen, die reflektiert werden können
