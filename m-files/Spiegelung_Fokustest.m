@@ -19,14 +19,14 @@ mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4
 handle_to_mirror_function = @mirr_func;
 
 %parameter für die Form der Absorberellipse
-ellipt_parameters = [1 1 0 0 0 0.1];
+ellipt_parameters = [1 1 0 0 0 1];
 
 
 % for theta_ind = 1:10
 % for theta_ind = 10
 theta_ind = 10;
 % for phi_ind = 1:length(phi_vector)
-for phi_ind = 5
+for phi_ind = 1:10
     
 theta = theta_vector(theta_ind);
 phi = phi_vector(phi_ind);
@@ -53,7 +53,7 @@ ray_paths(:,3,ind_of_rays_that_hit_it) = collision_points;
 
 %%%%%%%%%%%%%%%%%% Function call!
 % Reflektierte Richtung berechnen und in ray_paths eintragen.
-reflection1_direction = reflection(ray_paths(:,2:3,ind_of_rays_that_hit_it), 'verbose');
+reflection1_direction = reflection(ray_paths(:,2:3,ind_of_rays_that_hit_it), 'nonverbose');
 ray_paths(:,4,ind_of_rays_that_hit_it) = reflection1_direction;
 %%%%%%%%%%%%%%%%%%
 
@@ -67,7 +67,7 @@ ray_paths(:,4,ind_of_rays_that_hit_it) = reflection1_direction;
 %10 Strahlen, die ihm am nächsten sind, bzw die ihm näher als xy cm sind
 %%%%%%%%%%%%%%%%%% Function call!
 % Fokuspunkt berechnen
-focus = focus_of_rays(ray_paths, ind_of_rays_that_hit_it);
+focus = focus_of_rays_fast(ray_paths(:,3:4,ind_of_rays_that_hit_it));
 %%%%%%%%%%%%%%%%%%
 
 pos = focus;
@@ -90,7 +90,7 @@ drehmatrix = transformation(pos);
 
 
 %Absorption
-[num_rays,angle_rays,energy,absorption_point,ind_of_rays_that_are_absorbed] = absorber(ray_paths(:,(end-1):end,ind_of_rays_that_hit_it), ellipt_parameters, handle_to_mirror_function);
+[num_rays,angle_rays,energy,absorption_point,ind_of_rays_that_are_absorbed] = absorber(ray_paths(:,1:2,ind_of_rays_that_hit_it), ellipt_parameters, handle_to_mirror_function);
 disp(['Anzahl absorbierter Strahlen: ' int2str(num_rays)])
 
 drawnow
