@@ -34,7 +34,7 @@ phi = phi_vector(phi_ind);
 
 %%%%%%%%%%%%%%%%%% Function call!
 % Strahlen generieren
-ray_paths = raymaker(phi, theta, num_rays_per_row,'verbose');
+ray_paths = raymaker(phi, theta, num_rays_per_row,'nonverbose');
 %%%%%%%%%%%%%%%%%%
 
 %ZEITFRESSER (20sek bei 100 Strahlen)
@@ -47,14 +47,14 @@ ray_paths = raymaker(phi, theta, num_rays_per_row,'verbose');
 %      und dann Treffer von oben/unten unterscheiden
 %%%%%%%%%%%%%%%%%% Function call!
 % Kollisionen mit Spiegel und boundaries checken.
-[collision_points, ind_of_rays_that_hit_it] = collision_tracker_dychotom(ray_paths(:,1:2,:), handle_to_mirror_function);
+[collision_points, ind_of_rays_that_hit_it] = collision_tracker_goldenratio(ray_paths(:,1:2,:), handle_to_mirror_function);
 %%%%%%%%%%%%%%%%%%
 
 ray_paths(:,3,ind_of_rays_that_hit_it) = collision_points;
 
 %%%%%%%%%%%%%%%%%% Function call!
 % Reflektierte Richtung berechnen und in ray_paths eintragen.
-reflection1_direction = reflection(ray_paths(:,2:3,ind_of_rays_that_hit_it),handle_to_mirror_function, 'verbose');
+reflection1_direction = reflection(ray_paths(:,2:3,ind_of_rays_that_hit_it),handle_to_mirror_function, 'nonverbose');
 ray_paths(:,4,ind_of_rays_that_hit_it) = reflection1_direction;
 %%%%%%%%%%%%%%%%%%
 
