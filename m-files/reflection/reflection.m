@@ -16,8 +16,8 @@ mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4
 sun_height = 4*mirr_quadrat_equivalent;
 reflected_rays = zeros(3,size(rays,3));
 
-axis equal
-axis(1.1*[-sun_height sun_height -sun_height mirr_borders(2) -0.5*sun_height sun_height])
+%axis equal
+%axis(1.1*[-sun_height sun_height -sun_height mirr_borders(2) -0.5*sun_height sun_height])
     
 for ind_ray = 1:size(rays,3)
     %this used to be horribly wrong! it was c_position = rays(1:2,2,ind_ray);
