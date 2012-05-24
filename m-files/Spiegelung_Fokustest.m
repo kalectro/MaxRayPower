@@ -2,10 +2,10 @@ function Spiegelung_Fokustest
 % function zum Ausrechnen des Fokus für verschiedene Einstrahlwinkel
  close all
 
-theta_vector = -90:10:0;
-phi_vector = -90:10:90;
+theta_vector = -80:20:80;
+phi_vector = -80:20:80;
 
-num_rays_per_row = 40;
+num_rays_per_row = 10;
 
 focus_line = zeros(3,max(length(theta_vector),length(phi_vector)));
 
@@ -23,12 +23,22 @@ handle_to_mirror_function = @mirr_func;
 %parameter für die Form der Absorberellipse
 ellipt_parameters = [1 1 0 0 0 1];
 
+%plot der Spiegeloberflï¿½che
+[rays_x rays_y] = meshgrid(linspace(mirr_borders(1), mirr_borders(2), 10));
+mirror_surface = zeros(10);
+for x_ind = 1:10
+    for y_ind = 1:10
+        mirror_surface(x_ind,y_ind) = handle_to_mirror_function(rays_x(x_ind,y_ind),rays_y(x_ind,y_ind));
+    end
+end
+hold on
+surf(rays_x,rays_y,mirror_surface,'FaceColor','red','EdgeColor','none','FaceAlpha',0.8);
+hold off
 
-% for theta_ind = 1:10
-% for theta_ind = 10
-theta_ind = 10;
+for theta_ind = 1:size(theta_vector,2)
+%theta_ind = 10;
 % for phi_ind = 1:length(phi_vector)
-for phi_ind = 1:10
+for phi_ind = 1:size(phi_vector,2)
 
 theta = theta_vector(theta_ind);
 phi = phi_vector(phi_ind);
@@ -49,7 +59,7 @@ ray_paths = raymaker(phi, theta, num_rays_per_row,'nonverbose');
 %      und dann Treffer von oben/unten unterscheiden
 %%%%%%%%%%%%%%%%%% Function call!
 % Kollisionen mit Spiegel und boundaries checken.
-[collision_points, ind_of_rays_that_hit_it] = collision_tracker_goldenratio(ray_paths(:,1:2,:), handle_to_mirror_function);
+[collision_points, ind_of_rays_that_hit_it] = collision_tracker_dychotom(ray_paths(:,1:2,:), handle_to_mirror_function);
 %%%%%%%%%%%%%%%%%%
 
 ray_paths(:,3,ind_of_rays_that_hit_it) = collision_points;
@@ -96,16 +106,16 @@ pos = focus;
 focus_line(:,phi_ind) = pos;
 
 % plot current focus position
-s_rad = 0.1*mirr_quadrat_equivalent;
+s_rad = 0.01*mirr_quadrat_equivalent;
 hold on
-surf(s_rad*x+pos(1),s_rad*y+pos(2),s_rad*z+pos(3),'EdgeColor', 'none', 'FaceColor', 'red');
+surf(s_rad*x+pos(1),s_rad*y+pos(2),s_rad*z+pos(3),'EdgeColor', 'none', 'FaceColor', 'blue');
 hold off
 axis vis3d image
 view(3)
 
 drawnow
 end
-
+end
 % plot connecting line of all focus points
 hold on
 plot3(focus_line(1,:),focus_line(2,:),focus_line(3,:),'LineWidth', 4);
@@ -113,5 +123,5 @@ hold off
 axis vis3d image
 view(3)
 lighting gouraud
-
+camlight
 end
