@@ -1,5 +1,9 @@
-function [collision_points, ind_of_rays_that_hit_it] = collision_tracker_dychotom(rays, mirror_handle)
-global mirr_borders
+function [collision_points, ind_of_rays_that_hit_it] = collision_tracker_dychotom(rays, mirror_handle, borders)
+if ~exist('borders','var')
+    global mirr_borders
+else
+    mirr_borders = borders;
+end
 mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4)-mirr_borders(3)));
 sun_height = 4*mirr_quadrat_equivalent;
 ind_of_rays_that_hit_it = zeros(1,size(rays,3));

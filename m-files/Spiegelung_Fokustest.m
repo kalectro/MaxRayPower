@@ -5,9 +5,10 @@ function Spiegelung_Fokustest
 theta_vector = -80:20:80;
 phi_vector = -80:20:80;
 
-num_rays_per_row = 10;
+num_rays_per_row = 40;
 
 focus_line = zeros(3,max(length(theta_vector),length(phi_vector)));
+small_mirr_hand = @mirr_func_small;
 
 %mirr_borders are rectangular
 
@@ -35,10 +36,10 @@ hold on
 surf(rays_x,rays_y,mirror_surface,'FaceColor','red','EdgeColor','none','FaceAlpha',0.8);
 hold off
 
-for theta_ind = 1:size(theta_vector,2)
-%theta_ind = 10;
+% for theta_ind = 1:size(theta_vector,2)
+theta_ind = 5;
 % for phi_ind = 1:length(phi_vector)
-for phi_ind = 1:size(phi_vector,2)
+for phi_ind = 4%1:size(phi_vector,2)
 
 theta = theta_vector(theta_ind);
 phi = phi_vector(phi_ind);
@@ -85,20 +86,23 @@ focus = focus_of_rays_fast(ray_paths(:,3:4,ind_of_rays_that_hit_it));
 
 %%%%%%%%%%%%%%%%%% Function call!
 %Drehmatrix
-drehmatrix = transformation(focus);
+% drehmatrix = transformation(focus);
 %%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%% Function call!
 %kleiner Spiegel
-
+rays_to_mirror=ray_paths(:,3:4,ind_of_rays_that_hit_it);
+[rays_from_mirror]=smallmirrorreflection(rays_to_mirror,focus,small_mirr_hand);
 %%%%%%%%%%%%%%%%%%
 
 
 %%%%%%%%%%%%%%%%%% Function call!
 %Absorption
-[num_rays,angle_rays,energy,absorption_point,ind_of_rays_that_are_absorbed] = absorber(ray_paths(:,1:2,ind_of_rays_that_hit_it), ellipt_parameters, handle_to_mirror_function);
+[num_rays,angle_rays,energy,absorption_point,ind_of_rays_that_are_absorbed] = absorber(rays_from_mirror, ellipt_parameters, handle_to_mirror_function);
 % disp(['Anzahl absorbierter Strahlen: ' int2str(num_rays)])
 %%%%%%%%%%%%%%%%%%
+energy
+num_rays
 
 pos = focus;
 %wenn es keinen Fokuspunkt gibt, ist pos = [[];[];[]]
@@ -115,7 +119,7 @@ view(3)
 
 drawnow
 end
-end
+% end
 % plot connecting line of all focus points
 hold on
 plot3(focus_line(1,:),focus_line(2,:),focus_line(3,:),'LineWidth', 4);
