@@ -1,8 +1,3 @@
-%% hier muss noch gecheckt werden, ob die funktionen richtig verwendet werden...
-
-%% new_focus nicht initialisiert!!!
-
-
 function [rays_from_mirror,ind_of_rays_from_small_mirror]=smallmirrorreflection(rays_to_mirror,focus,small_mirr_hand,ind_of_rays_that_hit_it)
     % Transformationsmatrix für den kleinen Spiegel erzeugen
     [rot_matrix]=transformation(focus);
@@ -20,7 +15,8 @@ function [rays_from_mirror,ind_of_rays_from_small_mirror]=smallmirrorreflection(
     [collision_points,ind_rays_that_hit_it]=collision_tracker_dychotom(rays_to_mirror,small_mirr_hand,small_mirr_borders);
         %um die indces im Bezug auf die Sonne mitzuschleifen -> für
         %Backtracing!
-        ind_of_rays_from_small_mirror = ind_of_rays_that_hit_it(ind_rays_that_hit_it);
+%         ind_of_rays_from_small_mirror = ind_of_rays_that_hit_it(ind_rays_that_hit_it);
+    ind_of_rays_from_small_mirror = ind_rays_that_hit_it; % eine Zeile drüber durch diese ersetzt
         
     % Strahlen am kleinen Spiegel reflektieren
     tmp=zeros(3,2,length(ind_rays_that_hit_it)); % Matrix mit Strahlen, die reflektiert werden können
@@ -28,7 +24,6 @@ function [rays_from_mirror,ind_of_rays_from_small_mirror]=smallmirrorreflection(
         tmp(:,1,i)=rays_to_mirror(:,1,ind_rays_that_hit_it(i)); % Stützvektor
         tmp(:,2,i)=rays_to_mirror(:,2,ind_rays_that_hit_it(i)); % Richtungsvektor
     end
-    %[rays_from_mirror]=reflection(tmp,'verbose'); %% !!! Wo kann ich die Mirror-Funktion übergeben ????
     
     % etwas andere reflection-Funktion. Sonst verschwendet man vorhandenes Wissen%
     rays_from_mirror=reflection_m(tmp,collision_points,small_mirr_hand);
