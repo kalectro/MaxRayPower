@@ -128,4 +128,16 @@ axis vis3d image
 view(3)
 lighting gouraud
 camlight
+
+hold on
+% Plottet vom kleinen Spiegel reflektierte Strahlen
+for i=1:length(rays_from_mirror(1,1,:))
+    arrow3(rays_from_mirror(:,1,i)',(rays_from_mirror(:,1,i)+rays_from_mirror(:,2,i))','y',1,1);
+end
+hold off
+axis vis3d image
+view(3)
+lighting gouraud
+camlight
+%bis hierhin
 end
