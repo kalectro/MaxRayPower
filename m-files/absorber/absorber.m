@@ -60,7 +60,7 @@ for ray_ind = 1:size(rays,3)
             %Update Toleranzintervall
             tol_interval = borders(2)-borders(1);
         end
-        final_length = mean([borders(1) borders(2)]);
+        final_length = (borders(1) +borders(2)) / 2;
         coll_point = c_candidate + final_length*c_dir;
         
         borders = [0 2*sun_height];
