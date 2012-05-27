@@ -3,9 +3,9 @@ function Spiegelung_Fokustest
  close all
 
 % Parameter um den Ablauf zu beeinflussen
-theta_vector = -80:20:80;
+theta_vector = -80:20:0;
 phi_vector = -80:20:80;
-num_rays_per_row = 40;
+num_rays_per_row = 30;
 small_mirr_hand = @mirr_func_small;
 handle_to_mirror_function = @mirr_func;
 ellipt_parameters = [1 1 0 0 0 0.5];%parameter für die Form der Absorberellipse
@@ -56,14 +56,17 @@ for phi_ind = 4%1:size(phi_vector,2)
     %      und dann Treffer von oben/unten unterscheiden
     %%%%%%%%%%%%%%%%%% Function call!
     % Kollisionen mit Spiegel und boundaries checken.
-    [collision_points, ind_of_rays_that_hit_it] = collision_tracker_dychotom(ray_paths(:,1:2,:), handle_to_mirror_function);
-    ray_paths(:,3,ind_of_rays_that_hit_it) = collision_points;
+    [collision_points, ind_of_valid_rays] = collision_tracker_dychotom(ray_paths(:,1:2,:), handle_to_mirror_function);
+    if isempty(ind_of_valid_rays) % wenn kein Strahl mehr existiert
+        continue  % naechster Winkel
+    end
+    ray_paths(:,3,ind_of_valid_rays) = collision_points;
     %%%%%%%%%%%%%%%%%%   
 
     %%%%%%%%%%%%%%%%%% Function call!
     % Reflektierte Richtung berechnen und in ray_paths eintragen.
-    reflection1_direction = reflection(ray_paths(:,2:3,ind_of_rays_that_hit_it),handle_to_mirror_function, 'nonverbose');
-    ray_paths(:,4,ind_of_rays_that_hit_it) = reflection1_direction;
+    reflection1_direction = reflection(ray_paths(:,2:3,ind_of_valid_rays),handle_to_mirror_function, 'nonverbose');
+    ray_paths(:,4,ind_of_valid_rays) = reflection1_direction;
     %%%%%%%%%%%%%%%%%%
 
     %Zeitfresser
@@ -75,14 +78,31 @@ for phi_ind = 4%1:size(phi_vector,2)
     %10 Strahlen, die ihm am nächsten sind, bzw die ihm näher als xy cm sind
     %%%%%%%%%%%%%%%%%% Function call!
     % Fokuspunkt berechnen
-    focus = focus_of_rays_fast(ray_paths(:,3:4,ind_of_rays_that_hit_it));
+    focus = focus_of_rays_fast(ray_paths(:,3:4,ind_of_valid_rays));
     %%%%%%%%%%%%%%%%%%
+
+    % Hier Maxims Code einfügen
+    
+    %%%%%%%%%%%%%%%%%% Function call!
+    % Direktabsorbtion
+    [num_rays,~,~,absorption_points,ind_of_rays_that_are_pre_absorbed] =...
+        absorber(ray_paths(:,1:2,ind_of_valid_rays), ellipt_parameters, handle_to_mirror_function,'verbose',ind_of_valid_rays);
+    ray_paths(:,5:6,ind_of_rays_that_are_pre_absorbed)=ray_paths(:,1:2,ind_of_rays_that_are_pre_absorbed);  % der Vollständigkeit halber, damit ein Plot möglich ist
+    ray_paths(:,7,ind_of_rays_that_are_pre_absorbed)=absorption_points;
+    disp(['Anzahl direkt absorbierter Strahlen: ' int2str(num_rays)])
+    %%%%%%%%%%%%%%%%%%
+    
+    % Kollisionen mit großem Spiegel, die direkt absorbiert wurden nicht weiter beruecksichtigen.
+    for ray_ind = 1:size(ind_of_rays_that_are_pre_absorbed)
+        ind_of_valid_rays = ind_of_valid_rays(ind_of_valid_rays~=ind_of_rays_that_are_pre_absorbed(ray_ind)); 
+    end
+    %%%%%%%%%%%%%%%%%%   
 
     %%%%%%%%%%%%%%%%%% Function call!
     %kleiner Spiegel
-    rays_to_mirror=ray_paths(:,3:4,ind_of_rays_that_hit_it);
+    rays_to_mirror=ray_paths(:,3:4,ind_of_valid_rays);
     [rays_from_small_mirror,ind_of_rays_from_small_mirror]=...
-        smallmirrorreflection(rays_to_mirror,focus,small_mirr_hand,ind_of_rays_that_hit_it);
+        smallmirrorreflection(rays_to_mirror,focus,small_mirr_hand,ind_of_valid_rays,'nonverbose');
     ray_paths(:,5:6,ind_of_rays_from_small_mirror)=rays_from_small_mirror;
     %%%%%%%%%%%%%%%%%%
 
@@ -91,6 +111,7 @@ for phi_ind = 4%1:size(phi_vector,2)
     [num_rays,angle_rays,energy,absorption_points,ind_of_rays_that_are_absorbed] =...
         absorber(rays_from_small_mirror, ellipt_parameters, handle_to_mirror_function,'verbose',ind_of_rays_from_small_mirror);
     ray_paths(:,7,ind_of_rays_that_are_absorbed)=absorption_points;
+    ind_of_rays_that_are_absorbed = [ind_of_rays_that_are_absorbed ind_of_rays_that_are_pre_absorbed];
     disp(['Anzahl absorbierter Strahlen: ' int2str(num_rays)])
     %%%%%%%%%%%%%%%%%%
     
@@ -150,26 +171,26 @@ camlight
     rays_x = rays_x + focus(1);
     rays_y = rays_y + focus(2);
     small_mirror_surface = small_mirror_surface + focus(3);
-    %plotten
-hold on
-    surf(rays_x,rays_y,small_mirror_surface,'FaceColor','red','EdgeColor','none','FaceAlpha',0.5);
-  %the rays
-    arrow3((permute(ray_paths(:,1,ind_of_rays_that_are_absorbed),[1 3 2]))',(permute(ray_paths(:,3,ind_of_rays_that_are_absorbed),[1 3 2]))','y',0.5,0.5)
-    arrow3((permute(ray_paths(:,3,ind_of_rays_that_are_absorbed),[1 3 2]))',(permute(ray_paths(:,5,ind_of_rays_that_are_absorbed),[1 3 2]))','y',0.5,0.5)
-    arrow3((permute(ray_paths(:,5,ind_of_rays_that_are_absorbed),[1 3 2]))',absorption_points','y',0.5,0.5)
-
-  %test fuer die Koordinaten des kleinen Spiegels
-    ex=[1;0;0];
-    ey=[0;1;0];
-    ez=[0;0;1];
-    e1=drehmatrix*ex+focus;
-    e2=drehmatrix*ey+focus;
-    e3=drehmatrix*ez+focus;
-    arrow3(focus',e1','r2',1,1)
-    arrow3(focus',e2','b2',1,1)
-    arrow3(focus',e3','m2',1,1)
-hold off
-xlabel('X-Achse')
-ylabel('Y-Achse')
-zlabel('Z-Achse')
+%     %plotten
+% hold on
+%     surf(rays_x,rays_y,small_mirror_surface,'FaceColor','red','EdgeColor','none','FaceAlpha',0.5);
+%   %the rays
+%     arrow3((permute(ray_paths(:,1,ind_of_rays_that_are_absorbed),[1 3 2]))',(permute(ray_paths(:,3,ind_of_rays_that_are_absorbed),[1 3 2]))','y',0.5,0.5)
+%     arrow3((permute(ray_paths(:,3,ind_of_rays_that_are_absorbed),[1 3 2]))',(permute(ray_paths(:,5,ind_of_rays_that_are_absorbed),[1 3 2]))','y',0.5,0.5)
+%     arrow3((permute(ray_paths(:,5,ind_of_rays_that_are_absorbed),[1 3 2]))',absorption_points','y',0.5,0.5)
+% 
+%   %test fuer die Koordinaten des kleinen Spiegels
+%     ex=[1;0;0];
+%     ey=[0;1;0];
+%     ez=[0;0;1];
+%     e1=drehmatrix*ex+focus;
+%     e2=drehmatrix*ey+focus;
+%     e3=drehmatrix*ez+focus;
+%     arrow3(focus',e1','r2',1,1)
+%     arrow3(focus',e2','b2',1,1)
+%     arrow3(focus',e3','m2',1,1)
+% hold off
+% xlabel('X-Achse')
+% ylabel('Y-Achse')
+% zlabel('Z-Achse')
 end
