@@ -6,7 +6,8 @@ else
     local_mirr_borders = param_borders;
 end
 mirr_quadrat_equivalent = sqrt((local_mirr_borders(2)-local_mirr_borders(1))*(local_mirr_borders(4)-local_mirr_borders(3)));
-sun_height = 4*mirr_quadrat_equivalent;
+BIG_mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4)-mirr_borders(3)));
+sun_height = 4*BIG_mirr_quadrat_equivalent;
 ind_of_rays_that_hit_it = zeros(1,size(rays,3));
 tol_mirr_distance = 1e-3;
 collision_points=zeros(3,size(rays,3));

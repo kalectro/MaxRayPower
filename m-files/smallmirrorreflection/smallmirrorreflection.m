@@ -66,7 +66,7 @@ function [rays_from_mirror,ind_of_rays_from_small_mirror]=smallmirrorreflection(
     
     % etwas andere reflection-Funktion. Sonst verschwendet man vorhandenes Wissen%
 %     rays_from_mirror=reflection_m(tmp,collision_points,small_mirr_hand);
-test=permute(tmp(:,2,:),[1 3 2]);
+
     ray_dirs_from_mirror = reflection([tmp(:,2,:) permute(collision_points,[1 3 2])],small_mirr_hand);
     
     test=permute(ray_dirs_from_mirror,[1 3 2]);

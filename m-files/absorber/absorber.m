@@ -100,22 +100,8 @@ end
 
 
 %plot a circle and hitting rays
-if ~(num_rays == 0) && verbosity
-    hold on
-    circle_coord = zeros(360,3);
-    r=ellipt_constants(6);
-    for phi_circle = 1:360
-        circle_coord(phi_circle,1) = r*cos(pi*phi_circle/180);
-        circle_coord(phi_circle,2) = r*sin(pi*phi_circle/180);
-        circle_coord(phi_circle,3) = mirror_handle(circle_coord(phi_circle,1),circle_coord(phi_circle,2));
-    end
-    patch(circle_coord(:,1),circle_coord(:,2),circle_coord(:,3),'b')
+if verbosity
 
-%     ray_dirs = zeros(3,num_rays);
-%     ray_dirs(:,:) = rays(:,2,ind_of_rays_that_hit_it);
-
-    axis vis3d image
-%     arrow3(collision_points'-ray_dirs',collision_points','y',1,1)
-    hold off
 end
+
 end
