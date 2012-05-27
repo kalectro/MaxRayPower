@@ -11,9 +11,10 @@ small_mirr_hand = @mirr_func_small;
 small_mirr_hand_inv = @mirr_func_small_inv;
 handle_to_mirror_function = @mirr_func;
 ellipt_parameters = [1 1 0 0 0 0.5];%parameter für die Form der Absorberellipse
-verbosity = 'verbose';
+verbosity = 'nonverbose';
 
 % Notwendige Initialisierungen
+strahlen_gesamt = 0;
 focus_line = [];
 %mirr_borders are rectangular
 global mirr_borders half_mirr_edge_length
@@ -156,6 +157,7 @@ for timestep_ind = 1:length(phi_vector)
         disp(['Anzahl aller absorbierter Strahlen: ' int2str(length(ind_of_rays_that_are_absorbed))])
         disp('================================')
     end
+    strahlen_gesamt = strahlen_gesamt + length(ind_of_rays_that_are_absorbed);
 end %für timestep-Schleife
 % end %für phi-Schleife
 % end %für theta-Schleife
@@ -165,26 +167,32 @@ end %für timestep-Schleife
 
 %%% Es folgen weitere schöne plots
 %plot der Spiegeloberflaeche
-figure;
-axis equal
-axis([1.5*mirr_borders 0 3*half_mirr_edge_length])
-[rays_x rays_y] = meshgrid(linspace(mirr_borders(1), mirr_borders(2), 10));
-mirror_surface = zeros(10);
-for x_ind = 1:10
-    for y_ind = 1:10
-        mirror_surface(x_ind,y_ind) = handle_to_mirror_function(rays_x(x_ind,y_ind),rays_y(x_ind,y_ind));
+if strcmp(verbosity,'verbose')
+    figure;
+    axis equal
+    axis([1.5*mirr_borders 0 3*half_mirr_edge_length])
+    [rays_x rays_y] = meshgrid(linspace(mirr_borders(1), mirr_borders(2), 10));
+    mirror_surface = zeros(10);
+    for x_ind = 1:10
+        for y_ind = 1:10
+            mirror_surface(x_ind,y_ind) = handle_to_mirror_function(rays_x(x_ind,y_ind),rays_y(x_ind,y_ind));
+        end
     end
+    hold on
+    surf(rays_x,rays_y,mirror_surface,'FaceColor','red','EdgeColor','none','FaceAlpha',0.8);
+    hold off
+    % plot connecting line of all focus points
+    hold on
+    plot3(focus_line(1,:),focus_line(2,:),focus_line(3,:),'LineWidth', 4);
+    hold off
+    axis vis3d image
+    view(3)
+    lighting gouraud
+    camlight
 end
-hold on
-surf(rays_x,rays_y,mirror_surface,'FaceColor','red','EdgeColor','none','FaceAlpha',0.8);
-hold off
-% plot connecting line of all focus points
-hold on
-plot3(focus_line(1,:),focus_line(2,:),focus_line(3,:),'LineWidth', 4);
-hold off
-axis vis3d image
-view(3)
-lighting gouraud
-camlight
-
+disp('================================')
+disp('================================')
+disp(['Anzahl ALLER absorbierter Strahlen: ' int2str(strahlen_gesamt)])
+disp('================================')
+disp('================================')
 end
