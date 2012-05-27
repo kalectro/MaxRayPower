@@ -1,10 +1,11 @@
-function [collision_points, ind_of_rays_that_hit_it] = collision_tracker_dychotom(rays, mirror_handle, borders)
-if ~exist('borders','var')
-    global mirr_borders
+function [collision_points, ind_of_rays_that_hit_it] = collision_tracker_dychotom(rays, mirror_handle, param_borders)
+global mirr_borders
+if ~exist('param_borders','var')
+    local_mirr_borders = mirr_borders;
 else
-    mirr_borders = borders;
+    local_mirr_borders = param_borders;
 end
-mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4)-mirr_borders(3)));
+mirr_quadrat_equivalent = sqrt((local_mirr_borders(2)-local_mirr_borders(1))*(local_mirr_borders(4)-local_mirr_borders(3)));
 sun_height = 4*mirr_quadrat_equivalent;
 ind_of_rays_that_hit_it = zeros(1,size(rays,3));
 tol_mirr_distance = 1e-3;
@@ -54,8 +55,8 @@ for ray_ind = 1:size(rays,3)
         borders = [0 2*sun_height];
         
         %Wenn der Treffpunkt immernoch innerhalb der Grenzen: good ray!
-        if(mirr_borders(1) < coll_point(1) && coll_point(1) < mirr_borders(2) &&...
-            mirr_borders(3) < coll_point(2) && coll_point(2) < mirr_borders(4))
+        if(local_mirr_borders(1) < coll_point(1) && coll_point(1) < local_mirr_borders(2) &&...
+            local_mirr_borders(3) < coll_point(2) && coll_point(2) < local_mirr_borders(4))
             %Überprüfung, ob der Strahl den Spiegel auf der richtigen Seite trifft
 %             normale = mirror_normal_calculator(mirror_handle,coll_point);
 %             right_side=collision_direction(c_dir,normale);

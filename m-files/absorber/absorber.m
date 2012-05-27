@@ -1,4 +1,4 @@
-function [num_rays,angle_rays,energy,collision_points,ind_of_rays_that_hit_it] = absorber(rays, ellipt_constants, mirror_handle)
+function [num_rays,angle_rays,energy,collision_points,ind_of_rays_that_are_absorbed] = absorber(rays, ellipt_constants, mirror_handle,verbosity,ind_of_rays_from_small_mirror)
 if isempty(ellipt_constants)
     ellipt_constants = [1 1 0 0 0 1]; %Kreis mit radius 1
 end
@@ -85,6 +85,10 @@ collision_points = collision_points(:,1:num_rays);
 ind_of_rays_that_hit_it = ind_of_rays_that_hit_it(1:num_rays);
 angle_rays = collector_of_angle_rays(1:num_rays);
 
+    %um die indces im Bezug auf die Sonne mitzuschleifen -> für
+    %Backtracing!
+    ind_of_rays_that_are_absorbed = ind_of_rays_from_small_mirror(ind_of_rays_that_hit_it);
+
 %Berechnung der kumulativen Strahlenenergie
 for i = 1:num_rays
     %In angle_rays steht der Winkel relativ zur Normalen des Spiegels.
@@ -107,11 +111,11 @@ if ~(num_rays == 0) && verbosity
     end
     patch(circle_coord(:,1),circle_coord(:,2),circle_coord(:,3),'b')
 
-    ray_dirs = zeros(3,num_rays);
-    ray_dirs(:,:) = rays(:,2,ind_of_rays_that_hit_it);
+%     ray_dirs = zeros(3,num_rays);
+%     ray_dirs(:,:) = rays(:,2,ind_of_rays_that_hit_it);
 
     axis vis3d image
-    arrow3(collision_points'-ray_dirs',collision_points','y',1,1)
+%     arrow3(collision_points'-ray_dirs',collision_points','y',1,1)
     hold off
 end
 end
