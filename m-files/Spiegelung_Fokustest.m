@@ -7,6 +7,7 @@ theta_vector = -80:20:80;
 phi_vector = -80:20:80;
 num_rays_per_row = 40;
 small_mirr_hand = @mirr_func_small;
+small_mirr_hand_inv = @mirr_func_small_inv;
 handle_to_mirror_function = @mirr_func;
 ellipt_parameters = [1 1 0 0 0 0.5];%parameter für die Form der Absorberellipse
 
@@ -35,8 +36,8 @@ hold off
 %%%%%
 %FOR-Schleife (geht alle Einstrahlwinkel durch)
 %%%%%
-for theta_ind = 4%1:size(theta_vector,2)
-for phi_ind = 4%1:size(phi_vector,2)
+for theta_ind = 5%1:size(theta_vector,2)
+for phi_ind = 5%1:size(phi_vector,2)
 
     theta = theta_vector(theta_ind);
     phi = phi_vector(phi_ind);
@@ -76,6 +77,14 @@ for phi_ind = 4%1:size(phi_vector,2)
     %%%%%%%%%%%%%%%%%% Function call!
     % Fokuspunkt berechnen
     focus = focus_of_rays_fast(ray_paths(:,3:4,ind_of_rays_that_hit_it));
+    %%%%%%%%%%%%%%%%%%
+    
+    %%%%%%%%%%%%%%%%%%
+    % vom kleinen Spiegel geblockte Strahlen verwerfen
+    length(ray_paths(1,1,:))
+    
+    valid_rays=discard_rays_blocked_by_small_mirror(ray_paths(:,1:2,:),focus,small_mirr_hand_inv);
+    length(valid_rays)
     %%%%%%%%%%%%%%%%%%
 
     %%%%%%%%%%%%%%%%%% Function call!
