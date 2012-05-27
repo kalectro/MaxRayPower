@@ -1,4 +1,17 @@
-function [rays_from_mirror,ind_of_rays_from_small_mirror]=smallmirrorreflection(rays_to_mirror,focus,small_mirr_hand,ind_of_rays_that_hit_it)
+function [rays_from_mirror,ind_of_rays_from_small_mirror]=smallmirrorreflection(rays_to_mirror,focus,small_mirr_hand,ind_of_rays_that_hit_it,verbosity)
+    if exist('verbosity','var')
+    switch verbosity
+        case 'verbose',
+            verbosity = true;
+        case 'nonverbose',
+            verbosity = false;
+        otherwise
+            error('Falsches Eingabeargument bei reflection(~,~,v)! verbose oder nonverbose eingeben');
+    end
+    else
+        verbosity = false;
+    end    
+
     % Transformationsmatrix für den kleinen Spiegel erzeugen
     [rot_matrix]=transformation(focus);
 
@@ -20,7 +33,8 @@ function [rays_from_mirror,ind_of_rays_from_small_mirror]=smallmirrorreflection(
         %Backtracing!
 
         ind_of_rays_from_small_mirror = ind_of_rays_that_hit_it(ind_rays_that_hit_it);
-    
+
+    if verbosity
         %zwischendurch mal im small_mirror_KS den Stand plotten
         small_mirror_surface = zeros(10);
         [rays_x rays_y] = meshgrid(linspace(-half_small_mirr_edge_length, half_small_mirr_edge_length, 10));
@@ -41,6 +55,7 @@ function [rays_from_mirror,ind_of_rays_from_small_mirror]=smallmirrorreflection(
         camlight
         hold off
         figure(1)
+    end
 
     % Strahlen am kleinen Spiegel reflektieren
     tmp=zeros(3,2,length(ind_rays_that_hit_it)); % Matrix mit Strahlen, die reflektiert werden können
