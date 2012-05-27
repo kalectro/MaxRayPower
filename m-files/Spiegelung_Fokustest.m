@@ -3,9 +3,16 @@ function Spiegelung_Fokustest
  close all
 
 % Parameter um den Ablauf zu beeinflussen
-theta_vector = -80:20:80;
-phi_vector = -80:20:80;
-num_rays_per_row = 40;
+% theta_vector = -80:20:80;
+% phi_vector = -80:20:80;
+
+% angle_resolution = 20;
+number_Stuetzpunkte=20;
+[phi_vector, theta_vector] = make_phi_theta(number_Stuetzpunkte);
+phi_vector = phi_vector(5:(end-5));
+theta_vector = theta_vector(5:(end-5));
+
+num_rays_per_row = 30;
 small_mirr_hand = @mirr_func_small;
 small_mirr_hand_inv = @mirr_func_small_inv;
 handle_to_mirror_function = @mirr_func;
@@ -36,11 +43,10 @@ hold off
 %%%%%
 %FOR-Schleife (geht alle Einstrahlwinkel durch)
 %%%%%
-for theta_ind = 5%1:size(theta_vector,2)
-for phi_ind = 5%1:size(phi_vector,2)
 
-    theta = theta_vector(theta_ind);
-    phi = phi_vector(phi_ind);
+for timestep_ind = 1:length(phi_vector)
+    theta = theta_vector(timestep_ind);
+    phi = phi_vector(timestep_ind);
 
     %%%%%%%%%%%%%%%%%% Function call!
     % Strahlen generieren
@@ -89,9 +95,8 @@ for phi_ind = 5%1:size(phi_vector,2)
 
     %%%%%%%%%%%%%%%%%% Function call!
     %kleiner Spiegel
-    rays_to_mirror=ray_paths(:,3:4,ind_of_rays_that_hit_it);
     [rays_from_small_mirror,ind_of_rays_from_small_mirror]=...
-        smallmirrorreflection(rays_to_mirror,focus,small_mirr_hand,ind_of_rays_that_hit_it);
+        smallmirrorreflection(ray_paths(:,3:4,ind_of_rays_that_hit_it),focus,small_mirr_hand,ind_of_rays_that_hit_it);
     ray_paths(:,5:6,ind_of_rays_from_small_mirror)=rays_from_small_mirror;
     %%%%%%%%%%%%%%%%%%
 
@@ -121,8 +126,9 @@ for phi_ind = 5%1:size(phi_vector,2)
     view(3)
     drawnow
     
-end %für phi-Schleife
-end %für theta-Schleife
+end %für timestep-Schleife
+% end %für phi-Schleife
+% end %für theta-Schleife
 %%%%%
 %ENDE der for-Schleife
 %%%%%
@@ -162,11 +168,12 @@ camlight
     %plotten
 hold on
     surf(rays_x,rays_y,small_mirror_surface,'FaceColor','red','EdgeColor','none','FaceAlpha',0.5);
-  %the rays
+  %the rays  
+  if ~isempty(ind_of_rays_that_are_absorbed)
     arrow3((permute(ray_paths(:,1,ind_of_rays_that_are_absorbed),[1 3 2]))',(permute(ray_paths(:,3,ind_of_rays_that_are_absorbed),[1 3 2]))','y',0.5,0.5)
     arrow3((permute(ray_paths(:,3,ind_of_rays_that_are_absorbed),[1 3 2]))',(permute(ray_paths(:,5,ind_of_rays_that_are_absorbed),[1 3 2]))','y',0.5,0.5)
     arrow3((permute(ray_paths(:,5,ind_of_rays_that_are_absorbed),[1 3 2]))',absorption_points','y',0.5,0.5)
-
+  end
   %test fuer die Koordinaten des kleinen Spiegels
     ex=[1;0;0];
     ey=[0;1;0];
