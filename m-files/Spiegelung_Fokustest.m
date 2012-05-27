@@ -172,5 +172,4 @@ hold off
 xlabel('X-Achse')
 ylabel('Y-Achse')
 zlabel('Z-Achse')
-
 end

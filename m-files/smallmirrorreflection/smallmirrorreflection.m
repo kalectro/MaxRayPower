@@ -18,6 +18,7 @@ function [rays_from_mirror,ind_of_rays_from_small_mirror]=smallmirrorreflection(
     %%%
         %um die indces im Bezug auf die Sonne mitzuschleifen -> für
         %Backtracing!
+
         ind_of_rays_from_small_mirror = ind_of_rays_that_hit_it(ind_rays_that_hit_it);
     
         %zwischendurch mal im small_mirror_KS den Stand plotten
@@ -40,13 +41,13 @@ function [rays_from_mirror,ind_of_rays_from_small_mirror]=smallmirrorreflection(
         camlight
         hold off
         figure(1)
+
     % Strahlen am kleinen Spiegel reflektieren
     tmp=zeros(3,2,length(ind_rays_that_hit_it)); % Matrix mit Strahlen, die reflektiert werden können
     for i=1:length(ind_rays_that_hit_it)
         tmp(:,1,i)=rays_to_mirror(:,1,ind_rays_that_hit_it(i)); % Stützvektor
         tmp(:,2,i)=rays_to_mirror(:,2,ind_rays_that_hit_it(i)); % Richtungsvektor
     end
-    %[rays_from_mirror]=reflection(tmp,'verbose'); %% !!! Wo kann ich die Mirror-Funktion übergeben ????
     
     % etwas andere reflection-Funktion. Sonst verschwendet man vorhandenes Wissen%
 %     rays_from_mirror=reflection_m(tmp,collision_points,small_mirr_hand);
