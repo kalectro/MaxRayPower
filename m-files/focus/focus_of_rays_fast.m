@@ -1,9 +1,9 @@
 % berechnet den Fokuspunkt von allen Strahlen mit festem Abstand zum
 % Ursprung (alle Fokuspunkte liegen auf einer Halbkugel um den Ursprung
 % herum)
-function focus = focus_of_rays_fast(rays)
-global mirr_borders
-mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4)-mirr_borders(3)));
+function focus = focus_of_rays_fast(rays,mirr_quadrat_equivalent)
+% global mirr_borders
+% mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4)-mirr_borders(3)));
 
 a(:,:) = rays(:,1,:);   % alle Aufpunkte
 b(:,:) = rays(:,2,:);   % alle Richtungen

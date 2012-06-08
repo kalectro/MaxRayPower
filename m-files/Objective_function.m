@@ -3,9 +3,10 @@ function strahlen_gesamt = Objective_function(A)
 %  close all
 
 % Parameter aufteilen 
-if length(A) == 10
+if length(A) == 11
 spiegel_gross = A(1:5);
 spiegel_klein = A(6:10);
+radius = A(11);
 elseif length(A) == 18
 spiegel_gross = A(1:9);
 spiegel_klein = A(10:18);
@@ -15,8 +16,8 @@ end
 % Parameter um den Ablauf zu beeinflussen
 % theta_vector = -80:20:80;
 % phi_vector = -80:20:80;
-number_zeitpunkte=40;
-num_rays_per_row = 50;
+number_zeitpunkte=20;
+num_rays_per_row = 30;
 handle_to_mirror_function = @(x,y)mirr_func(x,y,spiegel_gross);
 small_mirr_hand = @(x,y)mirr_func_small(x,y,spiegel_klein);
 small_mirr_hand_inv = @(x,y)mirr_func_small_inv(x,y,spiegel_klein);
@@ -102,7 +103,7 @@ for timestep_ind = 1:length(phi_vector)
     %10 Strahlen, die ihm am nächsten sind, bzw die ihm näher als xy cm sind
     %%%%%%%%%%%%%%%%%% Function call!
     % Fokuspunkt berechnen
-    focus = focus_of_rays_fast(ray_paths(:,3:4,ind_of_valid_rays));
+    focus = focus_of_rays_fast(ray_paths(:,3:4,ind_of_valid_rays),radius);
     %%%%%%%%%%%%%%%%%%
     
     %%%%%%%%%%%%%%%%%%
