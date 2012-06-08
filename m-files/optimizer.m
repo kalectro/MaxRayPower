@@ -18,7 +18,7 @@ start_vec(10,:)= [0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 4];
 
 modus.absorber_optimieren = false;
 modus.kleinen_spiegel_optimieren = true;
-modus.num_rays_per_row = 5;
+modus.num_rays_per_row = 20;
 modus.number_zeitpunkte = 5;
 
 for i=1:4
