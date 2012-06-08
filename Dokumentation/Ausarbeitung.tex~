@@ -29,16 +29,4 @@ Probleme
  (Stirling, Turbine)
 \section{Kosten}
 \section{Ergebnisse}
-
-
-\section{Alles Mögliche}
-\begin{align*}
-	AirMass(\xi)=\frac{1}{\cos(\xi)}
-\end{align*}
-
-\begin{figure}
-\includegraphics{images/AirMass.png}
-\caption{Luftmasse in Abhängigkeit vom Zenit-Winkel}
-\label{pic:AirMass}
-\end{figure}
 \end{document}
