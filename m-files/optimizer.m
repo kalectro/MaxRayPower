@@ -21,6 +21,8 @@ modus.dritte_ordnung = true;
 
 A = start_vec(2:end);
 
+%A = [0.0380000000000000 0.0497000000000000 0.000500000000000000 0.000100000000000000 0.000300000000000000 0.0472000000000000 0.0471000000000000 0.000100000000000000 0.000300000000000000 0.000100000000000000 1]
+
 options = optimset('PlotFcns',@optimplotfval,'Display','iter','MaxFunEvals',1000);
 % [X,FVAL,~,OUTPUT] = patternsearch(@(x)distance_ray_mirror_anonym(x,ray,mirror),...
 x_out = fminsearch(@(x)Objective_function(x,modus),A,options);
