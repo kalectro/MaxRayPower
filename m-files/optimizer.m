@@ -2,13 +2,13 @@ function finally = optimizer()
 options = optimset('PlotFcns',@optimplotfval,'Display','iter','MaxFunEvals',1000);
 
 % grobe Annäherung mit Funktionen zweiten Grades mit vielen  Startwerten
-modes.ordnung = 2;
+modus.ordnung = 2;
 
 % 10 willkürliche Startwerte
 start_vec(1,:) = [0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 1];
 start_vec(2,:) = [1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1];
 start_vec(3,:) = [0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 1];
-start_vec(4,:) = [0 0 1/20 0 0 0 1/20 00 0 1/20 0 0 0 1/20 0 1];
+start_vec(4,:) = [0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 1];
 start_vec(5,:) = [1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 2];
 start_vec(6,:) = [1/20 1/50 0 0 1/20 1/50 0 0 1/20 1/50 0 0 1/20 1/50 0 0 4];
 start_vec(7,:) = [1/20 -1/20 0 0 1/20 -1/20 0 0 1/20 -1/20 0 0 1/20 -1/20 0 0 3];
@@ -18,10 +18,10 @@ start_vec(10,:)= [0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 4];
 
 modus.absorber_optimieren = false;
 modus.kleinen_spiegel_optimieren = true;
-modus.num_rays_per_row = 20;
+modus.num_rays_per_row = 5;
 modus.number_zeitpunkte = 5;
 
-for i=1:10
+for i=1:4
     % Optimierung starten
     [x_grob, FVAL] = fminsearch(@(x)Objective_function(x,modus),start_vec(i,:),options);
     % FVAL am Anfang von x_grob anhängen und für später speichern
