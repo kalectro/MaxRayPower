@@ -34,8 +34,8 @@ end
 % theta_vector = -80:20:80;
 % phi_vector = -80:20:80;
 
-number_zeitpunkte=20;
-num_rays_per_row = 30;
+number_zeitpunkte=modus.number_zeitpunkte;
+num_rays_per_row = modus.num_rays_per_row;
 
 handle_to_mirror_function = @(x,y)mirr_func(x,y,spiegel_gross);
 small_mirr_hand = @(x,y)mirr_func_small(x,y,spiegel_klein);
