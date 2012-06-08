@@ -1,30 +1,69 @@
-function optimizer
-modus.ordnung = 3;
+function finally = optimizer()
+options = optimset('PlotFcns',@optimplotfval,'Display','iter','MaxFunEvals',1000);
 
-start_vec = zeros(1,(modus.ordnung+1)^2);
-start_vec([3 (modus.ordnung*2+3)]) = 1/20;
+% grobe Annäherung mit Funktionen zweiten Grades mit vielen  Startwerten
+modes.ordnung = 2;
+
+% 10 willkürliche Startwerte
+start_vec(1,:) = [0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 1];
+start_vec(2,:) = [1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1];
+start_vec(3,:) = [0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 1];
+start_vec(4,:) = [0 0 1/20 0 0 0 1/20 00 0 1/20 0 0 0 1/20 0 1];
+start_vec(5,:) = [1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 2];
+start_vec(6,:) = [1/20 1/50 0 0 1/20 1/50 0 0 1/20 1/50 0 0 1/20 1/50 0 0 4];
+start_vec(7,:) = [1/20 -1/20 0 0 1/20 -1/20 0 0 1/20 -1/20 0 0 1/20 -1/20 0 0 3];
+start_vec(8,:) = [-1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 2];
+start_vec(9,:) = [0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 3];
+start_vec(10,:)= [0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 4];
+
+modus.absorber_optimieren = false;
+modus.kleinen_spiegel_optimieren = true;
+modus.num_rays_per_row = 20;
+modus.number_zeitpunkte = 5;
+
+for i=1:10
+    % Optimierung starten
+    [x_grob, FVAL] = fminsearch(@(x)Objective_function(x,modus),start_vec(i,:),options);
+    % FVAL am Anfang von x_grob anhängen und für später speichern
+    Ergebnisse(:,i) = [FVAL x_grob]'
+end
+
+% finde die drei besten Optimierungen
+Ergebnisse = sort(Ergebnisse,2)
+% lösche die anderen
+Ergebnisse = Ergebnisse(:,1:3)
+% lösche die erreichten FunValues
+Ergebnisse = Ergebnisse(2:end,:)
+%liegende Parametervektoren
+Ergebnisse=Ergebnisse'
+
+
+modus.ordnung = 3;
+start_neu = zeros(3,(modus.ordnung+1)^2);
+for i= 1:3
+    matrix_form = reshape([0 Ergebnisse(i,1:end-1)],modus.ordnung,modus.ordnung);
+    temp = zeros(modus.ordnung + 1);
+    temp(1:modus.ordnung,1:modus.ordnung)=matrix_form;
+    temp=[temp(2:end) Ergebnisse(i,end)];
+    start_neu(i,:)=temp;
+end
+
+
+
+%start_vec = zeros(1,(modus.ordnung+1)^2);
+%start_vec([3 (modus.ordnung*2+3)]) = 1/20;
 %neuer default / startvektor : [0 0 1/20 0 0 0 1/20 0 0] bei Ordnung 2
 
-%A=[1/20 1/20 0 0 0 1/20 1/20 0 0 0];
-%A = [0.0350 0.0519 0.0005 0.0001 0.0003 0.0472 0.0504 0.0001 0.0003 0.0001];
-% A = [ 0.0358 0.0512 0.0005 0.0001 0.0003 0.0469 0.0486 0.0001 0.0003 0.0001]
-% A= [0.0380000000000000 0.0497000000000000 0.000500000000000000 0.000100000000000000 0.000300000000000000 0.0472000000000000 0.0471000000000000 0.000100000000000000 0.000300000000000000 0.000100000000000000];
-%3rd grade
-% A=[A 0 0 0 0 0 0 0 0];
-
-
-% number_big_mirr_args = 
 modus.absorber_optimieren = false;
-modus.kleinen_spiegel_optimieren = false;
-modus.zweite_ordnung = false;
-modus.dritte_ordnung = true;
+modus.kleinen_spiegel_optimieren = true;
+modus.num_rays_per_row = 30;
+modus.number_zeitpunkte = 30;
 
-A = start_vec(2:end);
+% % Höhe vom großen Spiegel soll nicht optimiert werden
+% A = start_vec(2:end);
 
-%A = [0.0380000000000000 0.0497000000000000 0.000500000000000000 0.000100000000000000 0.000300000000000000 0.0472000000000000 0.0471000000000000 0.000100000000000000 0.000300000000000000 0.000100000000000000 1]
-
-options = optimset('PlotFcns',@optimplotfval,'Display','iter','MaxFunEvals',1000);
-% [X,FVAL,~,OUTPUT] = patternsearch(@(x)distance_ray_mirror_anonym(x,ray,mirror),...
-x_out = fminsearch(@(x)Objective_function(x,modus),A,options);
-x_out
+for i=1:3
+    [x_fein, FVAL] = fminsearch(@(x)Objective_function(x,modus),start_neu(i,:),options);
+    finally(i,:) = [FVAL x_fein]'
+end
 end
