@@ -32,20 +32,25 @@ Probleme
 
 
 \section{Alles Mögliche}
+
 \begin{align*}
 	AirMass(\xi)=\frac{1}{\cos(\xi)}
 \end{align*}
 
 \begin{figure}
 	\centering
-	\includegraphics{images/AirMass.png}
+	\includegraphics{images/Airmass.png}
 	\caption{Luftmasse in Abhängigkeit vom Zenit-Winkel}
 	\label{pic:AirMass}
 \end{figure}
 
-\begin{tabular}[|c|c|c|]
+\begin{table}
+\centering
 	\caption{Werte für Strahlungsleistung. Wiki (engl) air mass solar energy. Stand 08.06.}
-	\alpha & Air Mass & \frac{W}{m^2}\\
+	\label{tab:airmass}
+\begin{tabular}{|c|c|c|}
+	\hline
+	$\alpha$ & Air Mass & $\frac{W}{m^2}$\\
 	\hline
 	- & 0 & 1367\\
 	\hline
@@ -60,9 +65,11 @@ Probleme
 	85 & 10 & 270\\
 	\hline
 \end{tabular}
+\end{table}
 
 \begin{align*}
-	I=1,1\cdot I_0 \cdot 0,7^{AM^0,678}
-	\label{for:Intensity}
+	I=1,1\cdot I_0 \cdot 0,7^{AM^{0,678}}
+	\label{eqn:Intensity}
 \end{align*}
+
 \end{document}
