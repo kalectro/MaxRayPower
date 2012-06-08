@@ -24,10 +24,11 @@ else
         spiegel_klein = zeros(1,(ord-1)^2-1);
         radius = A((ord+1)^2);
     end
-    
-    
 end
 
+%Auffüllen
+spiegel_gross = [spiegel_gross zeros(1,35-((ord+1)^2-1))];
+spiegel_klein = [spiegel_klein zeros(1,35-((ord+1)^2-1))];
 
     
 % Parameter um den Ablauf zu beeinflussen
@@ -37,8 +38,8 @@ end
 number_zeitpunkte=modus.number_zeitpunkte;
 num_rays_per_row = modus.num_rays_per_row;
 
-handle_to_mirror_function = @(x,y)mirr_func(x,y,spiegel_gross);
-small_mirr_hand = @(x,y)mirr_func_small(x,y,spiegel_klein);
+handle_to_mirror_function = @(x,y)mirr_func2(x,y,spiegel_gross);
+small_mirr_hand = @(x,y)mirr_func2(x,y,spiegel_klein);
 small_mirr_hand_inv = @(x,y)mirr_func_small_inv(x,y,spiegel_klein);
 verbosity = 'nonverbose';
 
