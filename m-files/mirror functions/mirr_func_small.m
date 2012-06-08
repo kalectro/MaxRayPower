@@ -1,27 +1,12 @@
 function mirr_height = mirr_func_small(x,y,spiegel_klein_parameter)
-% x=k(1);
-% y=k(2);
-a=spiegel_klein_parameter(1);
-b=spiegel_klein_parameter(2);
-c=spiegel_klein_parameter(3);
-d=spiegel_klein_parameter(4);
-e=spiegel_klein_parameter(5);
 
-if length(spiegel_klein_parameter) == 9
-    f=spiegel_klein_parameter(6);
-    g=spiegel_klein_parameter(7);
-    h=spiegel_klein_parameter(8);
-    i=spiegel_klein_parameter(9);
-else
-    f=0;
-    g=0;
-    h=0;
-    i=0;
-end
+Ordnung = sqrt(length(spiegel_klein_parameter))-1;
+exp_vec = 0:Ordnung;
+x_vec = x.^(exp_vec);
+y_vec = y.^(exp_vec);
 
-mirr_height = a*x^2 + b*y^2 + c*x*y + d*x + e*y ...
-    + f*x^3 + g*y^3 + h*(x^2)*y + i*(y^2)*x; %additional 3rd grade part
+combination_matrix = x_vec' * y_vec;
+combination_vector = combination_matrix(:);
+mirr_height = spiegel_klein_parameter * combination_vector;
 
-
-% mirr_height = (x^2 + y^2) / 20;
 end

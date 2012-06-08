@@ -1,26 +1,41 @@
-function strahlen_gesamt = Objective_function(A)
+function strahlen_gesamt = Objective_function(A,modus)
 % function zum Ausrechnen des Fokus für verschiedene Einstrahlwinkel
 %  close all
 
-% Parameter aufteilen 
-if length(A) == 10
-spiegel_gross = A(1:5);
-spiegel_klein = A(6:10);
-elseif length(A) == 18
-spiegel_gross = A(1:9);
-spiegel_klein = A(10:18);
+%A(1:6) = ellipsenparameter
+%A(7:)
+% modus.absorber_optimieren = true;
+% modus.kleinen_spiegel_optimieren = true;
+
+if modus.absorber_optimieren
+    ellipt_parameters = A(1:6);
 else
+    ellipt_parameters = [1 1 0 0 0 0.5];%parameter für die Form der Absorberellipse
 end
+
+if modus.dritte_ordnung == true
+    spiegel_gross = A(1:end);
+    spiegel_klein = zeros(1,16);
+end
+% % Parameter aufteilen 
+% if length(A) == 10
+% spiegel_gross = A(1:5);
+% spiegel_klein = A(6:10);
+% elseif length(A) == 18
+% spiegel_gross = A(1:9);
+% spiegel_klein = A(10:18);
+% else
+% end
+
 
 % Parameter um den Ablauf zu beeinflussen
 % theta_vector = -80:20:80;
 % phi_vector = -80:20:80;
-number_zeitpunkte=40;
-num_rays_per_row = 50;
+number_zeitpunkte=10;
+num_rays_per_row = 15;
 handle_to_mirror_function = @(x,y)mirr_func(x,y,spiegel_gross);
 small_mirr_hand = @(x,y)mirr_func_small(x,y,spiegel_klein);
 small_mirr_hand_inv = @(x,y)mirr_func_small_inv(x,y,spiegel_klein);
-ellipt_parameters = [1 1 0 0 0 0.5];%parameter für die Form der Absorberellipse
 verbosity = 'nonverbose';
 
 % Notwendige Initialisierungen
