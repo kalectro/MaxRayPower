@@ -2,32 +2,34 @@ function strahlen_gesamt = Objective_function(A,modus)
 % function zum Ausrechnen des Fokus für verschiedene Einstrahlwinkel
 %  close all
 
-%A(1:6) = ellipsenparameter
-%A(7:)
-% modus.absorber_optimieren = true;
-% modus.kleinen_spiegel_optimieren = true;
+%Aufteilung von A:
+% 1) Ellipsenparameter (6)
+% 2) Großer Spiegel (Ordnung-1)^2-1 (minus eins, da der Offset entfällt)
+% 3) Kleiner Spiegel dito
+% 4) Focus-Entfernung (1)
+
+% Parameter aufteilen 
 
 if modus.absorber_optimieren
     ellipt_parameters = A(1:6);
 else
     ellipt_parameters = [1 1 0 0 0 0.5];%parameter für die Form der Absorberellipse
+    ord = modus.ordnung;
+    spiegel_gross=A(1:((ord+1)^2-1));
+    
+    if modus.kleinen_spiegel_optimieren
+        spiegel_klein=A((ord+1)^2:2*(((ord+1)^2)-1));
+        radius = A(2*(((ord+1)^2)-1)+1);
+    else
+        spiegel_klein = zeros(1,(ord-1)^2-1);
+        radius = A((ord+1)^2);
+    end
+    
+    
 end
 
-if modus.dritte_ordnung == true
-    spiegel_gross = A(1:end);
-    spiegel_klein = zeros(1,16);
-end
-% % Parameter aufteilen 
-% if length(A) == 10
-% spiegel_gross = A(1:5);
-% spiegel_klein = A(6:10);
-% elseif length(A) == 18
-% spiegel_gross = A(1:9);
-% spiegel_klein = A(10:18);
-% else
-% end
 
-
+    
 % Parameter um den Ablauf zu beeinflussen
 % theta_vector = -80:20:80;
 % phi_vector = -80:20:80;
