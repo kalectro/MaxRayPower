@@ -2,47 +2,6 @@ function strahlen_gesamt = Objective_function(A,modus)
 % function zum Ausrechnen des Fokus für verschiedene Einstrahlwinkel
 %  close all
 
-%Aufteilung von A:
-% 1) Ellipsenparameter (6)
-% 2) Großer Spiegel (Ordnung-1)^2-1 (minus eins, da der Offset entfällt)
-% 3) Kleiner Spiegel dito
-% 4) Focus-Entfernung (1)
-
-% Parameter aufteilen 
-
-if modus.absorber_optimieren
-    ellipt_parameters = A(1:6);
-else
-    ellipt_parameters = [1 1 0 0 0 0.5];%parameter für die Form der Absorberellipse
-    ord = modus.ordnung;
-    spiegel_gross=A(1:((ord+1)^2-1));
-    
-    if modus.kleinen_spiegel_optimieren
-        spiegel_klein=A((ord+1)^2:2*(((ord+1)^2)-1));
-        radius = A(2*(((ord+1)^2)-1)+1);
-    else
-        spiegel_klein = zeros(1,(ord-1)^2-1);
-        radius = A((ord+1)^2);
-    end
-end
-
-%Auffüllen
-spiegel_gross = [spiegel_gross zeros(1,35-((ord+1)^2-1))];
-spiegel_klein = [spiegel_klein zeros(1,35-((ord+1)^2-1))];
-
-    
-% Parameter um den Ablauf zu beeinflussen
-% theta_vector = -80:20:80;
-% phi_vector = -80:20:80;
-
-number_zeitpunkte=modus.number_zeitpunkte;
-num_rays_per_row = modus.num_rays_per_row;
-
-handle_to_mirror_function = @(x,y)mirr_func2(x,y,spiegel_gross);
-small_mirr_hand = @(x,y)mirr_func2(x,y,spiegel_klein);
-small_mirr_hand_inv = @(x,y)mirr_func_small_inv(x,y,spiegel_klein);
-verbosity = 'nonverbose';
-
 % Notwendige Initialisierungen
 strahlen_gesamt = 0;
 focus_line = [];
@@ -52,7 +11,89 @@ half_mirr_edge_length = sqrt(10)/2; %10qm Grundflaeche
 mirr_borders = [-half_mirr_edge_length half_mirr_edge_length -half_mirr_edge_length half_mirr_edge_length];
 mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4)-mirr_borders(3)));
 [x,y,z] = sphere;
+number_zeitpunkte=modus.number_zeitpunkte;
+num_rays_per_row = modus.num_rays_per_row;
 [phi_vector, theta_vector] = make_phi_theta(number_zeitpunkte);
+
+%Aufteilung von A:
+% 1) Ellipsenparameter (6)
+% 2) Großer Spiegel (Ordnung-1)^2-1 (minus eins, da der Offset entfällt)
+% 3) Kleiner Spiegel (dito)
+% 4) Focus-Entfernung (1)
+
+ord = modus.ordnung;
+num_mirr_param = (ord+1)^2-1;
+    
+% Parameter aufteilen 
+if modus.absorber_optimieren
+    if length(A) < 6
+        error('A ist zu klein!')
+    end
+    ellipt_parameters = A(1:6);
+    if length(A) > 6
+        A = A(7:end);
+    else
+        A=[];
+    end
+else
+    ellipt_parameters = [1 1 0 0 0 0.5];%Parameter für die Form der Absorberellipse
+end
+
+if modus.grossen_spiegel_optimieren
+    if length(A) < num_mirr_param
+        error('A ist zu klein!')
+    end
+    spiegel_gross=A(1:num_mirr_param);
+    if length(A) > num_mirr_param
+        A=A(num_mirr_param+1:end);
+    else
+        A=[];
+    end
+else
+    spiegel_gross=zeros(1,num_mirr_param);
+end
+
+if modus.kleinen_spiegel_optimieren
+    if length(A) < num_mirr_param
+        error('A ist zu klein!')
+    end
+    spiegel_klein=A(1:num_mirr_param);
+    if length(A) > num_mirr_param
+        A=A(num_mirr_param+1:end);
+    else
+        A=[];
+    end
+else
+    spiegel_klein=zeros(1,num_mirr_param);
+end
+
+if modus.spiegelpfad_radius_optimieren
+    if length(A) < 1
+        error('A ist zu klein!')
+    end
+    radius = A(1);
+    if length(A) > 1
+        A=A(2:end);
+    else
+        A=[];
+    end
+else
+    radius=mirr_quadrat_equivalent;
+end
+
+
+%Auffüllen
+spiegel_gross = [spiegel_gross zeros(1,35-((ord+1)^2-1))];
+spiegel_klein = [spiegel_klein zeros(1,35-((ord+1)^2-1))];
+
+    
+% Parameter um den Ablauf zu beeinflussen
+% theta_vector = -80:20:80;
+% phi_vector = -80:20:80;
+handle_to_mirror_function = @(x,y)mirr_func2(x,y,spiegel_gross);
+small_mirr_hand = @(x,y)mirr_func2(x,y,spiegel_klein);
+small_mirr_hand_inv = @(x,y)mirr_func_small_inv(x,y,spiegel_klein);
+verbosity = 'nonverbose';
 
 
 % %plot der Spiegeloberflaeche
