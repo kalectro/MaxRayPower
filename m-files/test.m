@@ -1,3 +1,11 @@
 close all;
-A= [0.0380000000000000 0.0497000000000000 0.000500000000000000 0.000100000000000000 0.000300000000000000 0.0472000000000000 0.0471000000000000 0.000100000000000000 0.000300000000000000 0.000100000000000000 1]
-Objective_function(A);
+modus.ordnung = 2;
+modus.absorber_optimieren = false;
+modus.kleinen_spiegel_optimieren = true;
+modus.grossen_spiegel_optimieren = true;
+modus.spiegelpfad_radius_optimieren = true;
+modus.num_rays_per_row = 20;
+modus.number_zeitpunkte = 5;
+
+A = [0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 1];
+Objective_function(A, modus);

@@ -114,7 +114,7 @@ verbosity = 'nonverbose';
 %FOR-Schleife (geht alle Einstrahlwinkel durch)
 %%%%%
 
-for timestep_ind = 1:length(phi_vector)
+parfor timestep_ind = 1:length(phi_vector)
 
     theta = theta_vector(timestep_ind);
     phi = phi_vector(timestep_ind);
