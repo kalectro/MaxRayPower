@@ -25,33 +25,61 @@ collision_points=zeros(3,size(rays,3));
 collector_of_angle_rays = zeros(1,size(rays,3));
 num_rays = 0;
 borders = [0 2*sun_height]; %grenzen den Suchraum in c_dir-Richtung ein
+step_size = 1e-1; %10 cm
 
 for ray_ind = 1:size(rays,3)
 
-    tol_interval = borders(2)-borders(1);
+tol_interval = borders(2)-borders(1);
     c_candidate = rays(:,1,ray_ind);
     c_dir = rays(:,2,ray_ind);
     
     scnd_border_position = c_candidate + borders(2)*c_dir;
 
-    %Wenn du die letzte Länge wiederverwendet hast, jedoch kein
+    %Wenn du die letzte Lï¿½nge wiederverwendet hast, jedoch kein
     %Schnittpunkt mit dem Spiegel existiert, verwirf die Laenge und
     %mache eine Suche mit den min und max borders (0 und 2fache
-    %Sonnenhöhe).
-    if scnd_border_position(3) > mirror_handle(scnd_border_position(1),scnd_border_position(2))
-        borders = [0 2*sun_height];
-        scnd_border_position = c_candidate + borders(2)*c_dir;
-    end
+    %Sonnenhï¿½he).
+%     if scnd_border_position(3) > mirror_handle(scnd_border_position(1),scnd_border_position(2))
+%         borders = [0 2*sun_height];
+%         scnd_border_position = c_candidate + borders(2)*c_dir;
+%     end
 
-    %Wenn der Strahl über dem Boden startet und nicht am Spiegel
+    %Wenn der Strahl ï¿½ber dem Boden startet und nicht am Spiegel
     %vorbeifliegt, dann...
     if(c_candidate(3)>0 && scnd_border_position(3)<mirror_handle(scnd_border_position(1),scnd_border_position(2)))
-        while(tol_interval > tol_mirr_distance)
+        %in 10cm-Schritten annï¿½hern
+        temp_length = borders(1);
+        t_candidate = c_candidate;
+        still_good = true;
+        %ABSORBER spezifisch
+        while(~(NONLCON_ellipse(t_candidate,ellipt_constants) <= 0) && ...
+                temp_length < tol_interval)
+            temp_length = temp_length + step_size;
+            t_candidate = c_candidate + temp_length*c_dir;
+        end
+        if(temp_length > tol_interval)
+            still_good = false;
+        end
+        
+        while(still_good &&...
+                t_candidate(3) > mirror_handle(t_candidate(1),t_candidate(2)))
+            temp_length = temp_length + step_size;
+            t_candidate = c_candidate + temp_length*c_dir;
+        end
+        temp_length = temp_length - step_size;
+        borders(1) = temp_length;
+        t_candidate = c_candidate + temp_length*c_dir;
+        if(t_candidate(3) < mirror_handle(t_candidate(1),t_candidate(2)))
+            still_good = false;
+        end
+        
+        while(still_good &&...
+                tol_interval > tol_mirr_distance)
             length_inbetween_borders = (borders(1)+borders(2))/2;
             middle_point = c_candidate + length_inbetween_borders*c_dir;
-            %Wenn die Mitte des derzeitigen Intervalls über dem Spiegel
-            %liegt, nimm nur noch die untere Hälfte als Suchraum, wenn si
-            %eunter dem Spiegel liegt, nimm die obere Hälfte.
+            %Wenn die Mitte des derzeitigen Intervalls ï¿½ber dem Spiegel
+            %liegt, nimm nur noch die untere Hï¿½lfte als Suchraum, wenn si
+            %eunter dem Spiegel liegt, nimm die obere Hï¿½lfte.
             if middle_point(3) > mirror_handle(middle_point(1),middle_point(2))
                 borders(1)= length_inbetween_borders;
             else
@@ -60,20 +88,32 @@ for ray_ind = 1:size(rays,3)
             %Update Toleranzintervall
             tol_interval = borders(2)-borders(1);
         end
-        final_length = (borders(1) +borders(2)) / 2;
+        final_length = (borders(1) + borders(2)) / 2;
         coll_point = c_candidate + final_length*c_dir;
-        
+        if abs(coll_point(3)-mirror_handle(coll_point(1),coll_point(2))) > tol_mirr_distance
+%             disp('Entfernung: ')
+%             disp(norm(coll_point(3)-mirror_handle(coll_point(1),coll_point(2))))
+%             disp('Strahlnummer: ')
+%             disp(ray_ind)
+            still_good = false;
+%             too_far = true;
+        end
         borders = [0 2*sun_height];
-
-        %Wenn der Treffpunkt immernoch innerhalb der Grenzen: good ray!
-        if(NONLCON_ellipse(coll_point,ellipt_constants) <= 0)
         
-            num_rays = num_rays+1;
-            collision_points(:,num_rays) = coll_point;
-            ind_of_rays_that_hit_it(num_rays) = ray_ind;
-
-            borders = [final_length-mirr_quadrat_equivalent/16 final_length+mirr_quadrat_equivalent/16];
+        %Wenn der Treffpunkt immernoch innerhalb der Grenzen: good ray!
+        %ABSORBER spezifisch
+        if(still_good &&...
+                NONLCON_ellipse(coll_point,ellipt_constants) <= 0)
             
+            right_side = collision_direction_neu([coll_point c_dir],mirror_handle);
+            if right_side
+                num_rays = num_rays+1;
+                collision_points(:,num_rays) = coll_point;
+                ind_of_rays_that_hit_it(num_rays) = ray_ind;
+            end
+            %borders = [final_length-mirr_quadrat_equivalent/16 final_length+mirr_quadrat_equivalent/16];
+
+            %ABSORBER spezifisch
             c_plane_normal = mirror_normal_calculator(mirror_handle,coll_point);
             collector_of_angle_rays(num_rays) = 180*acos(dot(c_plane_normal,-c_dir))/pi;
         end
@@ -85,7 +125,7 @@ collision_points = collision_points(:,1:num_rays);
 ind_of_rays_that_hit_it = ind_of_rays_that_hit_it(1:num_rays);
 angle_rays = collector_of_angle_rays(1:num_rays);
 
-    %um die indces im Bezug auf die Sonne mitzuschleifen -> für
+    %um die indces im Bezug auf die Sonne mitzuschleifen -> for
     %Backtracing!
     ind_of_rays_that_are_absorbed = ind_of_rays_from_small_mirror(ind_of_rays_that_hit_it);
 
@@ -93,8 +133,8 @@ angle_rays = collector_of_angle_rays(1:num_rays);
 for i = 1:num_rays
     %In angle_rays steht der Winkel relativ zur Normalen des Spiegels.
     %Dieser wird in den radian-Wert umgerechnet und als cosinus zur Energie
-    %hinzugefügt. Daraus ergibt sich, dass senkrechte Strahlen die Energie
-    %1 und Strahlen parallel zur Spiegeloberfläche die Energie 0 besitzen.
+    %hinzugefï¿½gt. Daraus ergibt sich, dass senkrechte Strahlen die Energie
+    %1 und Strahlen parallel zur Spiegeloberflï¿½che die Energie 0 besitzen.
     energy = energy + cos(pi*angle_rays(i)/180);
 end
 

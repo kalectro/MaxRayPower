@@ -24,19 +24,19 @@ for ray_ind = 1:size(rays,3)
     
     scnd_border_position = c_candidate + borders(2)*c_dir;
 
-    %Wenn du die letzte Länge wiederverwendet hast, jedoch kein
+    %Wenn du die letzte Lï¿½nge wiederverwendet hast, jedoch kein
     %Schnittpunkt mit dem Spiegel existiert, verwirf die Laenge und
     %mache eine Suche mit den min und max borders (0 und 2fache
-    %Sonnenhöhe).
-    if scnd_border_position(3) > mirror_handle(scnd_border_position(1),scnd_border_position(2))
-        borders = [0 2*sun_height];
-        scnd_border_position = c_candidate + borders(2)*c_dir;
-    end
+    %Sonnenhï¿½he).
+%     if scnd_border_position(3) > mirror_handle(scnd_border_position(1),scnd_border_position(2))
+%         borders = [0 2*sun_height];
+%         scnd_border_position = c_candidate + borders(2)*c_dir;
+%     end
 
-    %Wenn der Strahl über dem Boden startet und nicht am Spiegel
+    %Wenn der Strahl ï¿½ber dem Boden startet und nicht am Spiegel
     %vorbeifliegt, dann...
     if(c_candidate(3)>0 && scnd_border_position(3)<mirror_handle(scnd_border_position(1),scnd_border_position(2)))
-        %in 10cm-Schritten annähern
+        %in 10cm-Schritten annï¿½hern
         temp_length = borders(1);
         t_candidate = c_candidate;
         still_good = true;
@@ -49,6 +49,8 @@ for ray_ind = 1:size(rays,3)
         if(temp_length > tol_interval)
             still_good = false;
         end
+        
+        
         
         while(still_good &&...
                 t_candidate(3) > mirror_handle(t_candidate(1),t_candidate(2)))
@@ -66,9 +68,9 @@ for ray_ind = 1:size(rays,3)
                 tol_interval > tol_mirr_distance)
             length_inbetween_borders = (borders(1)+borders(2))/2;
             middle_point = c_candidate + length_inbetween_borders*c_dir;
-            %Wenn die Mitte des derzeitigen Intervalls über dem Spiegel
-            %liegt, nimm nur noch die untere Hälfte als Suchraum, wenn si
-            %eunter dem Spiegel liegt, nimm die obere Hälfte.
+            %Wenn die Mitte des derzeitigen Intervalls ï¿½ber dem Spiegel
+            %liegt, nimm nur noch die untere Hï¿½lfte als Suchraum, wenn si
+            %eunter dem Spiegel liegt, nimm die obere Hï¿½lfte.
             if middle_point(3) > mirror_handle(middle_point(1),middle_point(2))
                 borders(1)= length_inbetween_borders;
             else
@@ -79,7 +81,7 @@ for ray_ind = 1:size(rays,3)
         end
         final_length = (borders(1) + borders(2)) / 2;
         coll_point = c_candidate + final_length*c_dir;
-        if norm(coll_point(3)-mirror_handle(coll_point(1),coll_point(2))) > tol_mirr_distance
+        if abs(coll_point(3)-mirror_handle(coll_point(1),coll_point(2))) > tol_mirr_distance
 %             disp('Entfernung: ')
 %             disp(norm(coll_point(3)-mirror_handle(coll_point(1),coll_point(2))))
 %             disp('Strahlnummer: ')
@@ -93,7 +95,7 @@ for ray_ind = 1:size(rays,3)
         if(still_good &&...
             local_mirr_borders(1) < coll_point(1) && coll_point(1) < local_mirr_borders(2) &&...
             local_mirr_borders(3) < coll_point(2) && coll_point(2) < local_mirr_borders(4))
-            %Überprüfung, ob der Strahl den Spiegel auf der richtigen Seite trifft
+            %ï¿½berprï¿½fung, ob der Strahl den Spiegel auf der richtigen Seite trifft
 %             normale = mirror_normal_calculator(mirror_handle,coll_point);
 %             right_side=collision_direction(c_dir,normale);
             right_side = collision_direction_neu([coll_point c_dir],mirror_handle);
@@ -102,7 +104,7 @@ for ray_ind = 1:size(rays,3)
                 collision_points(:,num_rays) = coll_point;
                 ind_of_rays_that_hit_it(num_rays) = ray_ind;
                 
-                borders = [final_length-mirr_quadrat_equivalent/16 final_length+mirr_quadrat_equivalent/16];
+                %borders = [final_length-mirr_quadrat_equivalent/16 final_length+mirr_quadrat_equivalent/16];
             end
         end
     end
