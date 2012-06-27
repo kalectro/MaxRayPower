@@ -1,0 +1,28 @@
+
+Parameter der Optimierung:
+
+Parameter der Optimierung:
+modus.ordnung: 2
+modus.absorber_optimieren: 0
+modus.grossen_spiegel_optimieren: 1
+modus.kleinen_spiegel_optimieren: 1
+modus.spiegelpfad_radius_optimieren: 1
+modus.num_rays_per_row: 20
+modus.number_zeitpunkte: 15
+A = 0.099000
+A = 0.262000
+A = 0.336000
+A = 0.680000
+A = 0.137000
+A = 0.722000
+A = 0.107000
+A = 0.654000
+A = 0.495000
+A = 0.780000
+A = 0.716000
+A = 0.904000
+A = 0.891000
+A = 0.335000
+A = 0.699000
+A = 0.198000
+A = 0.700000
