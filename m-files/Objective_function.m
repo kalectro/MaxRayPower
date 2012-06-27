@@ -1,5 +1,5 @@
 function strahlen_gesamt = Objective_function(A,modus)
-% function zum Ausrechnen des Fokus für verschiedene Einstrahlwinkel
+% function zum Ausrechnen des Fokus fï¿½r verschiedene Einstrahlwinkel
 %  close all
 
 % Notwendige Initialisierungen
@@ -17,7 +17,7 @@ num_rays_per_row = modus.num_rays_per_row;
 
 %Aufteilung von A:
 % 1) Ellipsenparameter (6)
-% 2) Großer Spiegel (Ordnung-1)^2-1 (minus eins, da der Offset entfällt)
+% 2) Groï¿½er Spiegel (Ordnung-1)^2-1 (minus eins, da der Offset entfï¿½llt)
 % 3) Kleiner Spiegel (dito)
 % 4) Focus-Entfernung (1)
 
@@ -36,7 +36,7 @@ if modus.absorber_optimieren
         A=[];
     end
 else
-    ellipt_parameters = [1 1 0 0 0 0.5];%Parameter für die Form der Absorberellipse
+    ellipt_parameters = [1 1 0 0 0 0.5];%Parameter fï¿½r die Form der Absorberellipse
 end
 
 if modus.grossen_spiegel_optimieren
@@ -82,7 +82,7 @@ else
 end
 
 
-%Auffüllen
+%Auffï¿½llen
 spiegel_gross = [spiegel_gross zeros(1,35-((ord+1)^2-1))];
 spiegel_klein = [spiegel_klein zeros(1,35-((ord+1)^2-1))];
 
@@ -93,7 +93,7 @@ spiegel_klein = [spiegel_klein zeros(1,35-((ord+1)^2-1))];
 handle_to_mirror_function = @(x,y)mirr_func2(x,y,spiegel_gross);
 small_mirr_hand = @(x,y)mirr_func2(x,y,spiegel_klein);
 small_mirr_hand_inv = @(x,y)mirr_func_small_inv(x,y,spiegel_klein);
-verbosity = 'verbose';
+verbosity = 'nonverbose';
 
 
 % %plot der Spiegeloberflaeche
@@ -141,7 +141,7 @@ for timestep_ind = 1:length(phi_vector)
     if isempty(ind_of_valid_rays) % wenn kein Strahl mehr existiert
         if strcmp(verbosity,'verbose')
         disp('Anzahl direkt absorbierter Strahlen: 0')
-        disp('Anzahl sekundär absorbierter Strahlen: 0')
+        disp('Anzahl sekundï¿½r absorbierter Strahlen: 0')
         end
         continue  % naechster Winkel
     end
@@ -160,7 +160,7 @@ for timestep_ind = 1:length(phi_vector)
     %2. Gewichtung von Fokuspunkten nach: nahe Nachbarn: gut!, nachbarn weit
     %weg: boese! (z.B weight = sum(1/dist_to_neighbor_i)) over i
     %3. Gegen das Zeitfressen: jeder Strahl berechnet seinen Schnitt nur mit den
-    %10 Strahlen, die ihm am nächsten sind, bzw die ihm näher als xy cm sind
+    %10 Strahlen, die ihm am nï¿½chsten sind, bzw die ihm nï¿½her als xy cm sind
     %%%%%%%%%%%%%%%%%% Function call!
     % Fokuspunkt berechnen
     focus = focus_of_rays_fast(ray_paths(:,3:4,ind_of_valid_rays),radius);
@@ -175,14 +175,14 @@ for timestep_ind = 1:length(phi_vector)
     % Direktabsorbtion
     [num_rays,~,~,absorption_points,ind_of_rays_that_are_pre_absorbed] =...
         absorber(ray_paths(:,1:2,ind_of_valid_rays), ellipt_parameters, handle_to_mirror_function,'nonverbose',ind_of_valid_rays);
-    ray_paths(:,5:6,ind_of_rays_that_are_pre_absorbed)=ray_paths(:,1:2,ind_of_rays_that_are_pre_absorbed);  % der Vollständigkeit halber, damit ein Plot möglich ist
+    ray_paths(:,5:6,ind_of_rays_that_are_pre_absorbed)=ray_paths(:,1:2,ind_of_rays_that_are_pre_absorbed);  % der Vollstï¿½ndigkeit halber, damit ein Plot mï¿½glich ist
     ray_paths(:,7,ind_of_rays_that_are_pre_absorbed)=absorption_points;
     if strcmp(verbosity,'verbose')
         disp(['Anzahl direkt absorbierter Strahlen: ' int2str(num_rays)])
     end
     %%%%%%%%%%%%%%%%%%
     
-    % Kollisionen mit großem Spiegel, die direkt absorbiert wurden nicht weiter beruecksichtigen.
+    % Kollisionen mit groï¿½em Spiegel, die direkt absorbiert wurden nicht weiter beruecksichtigen.
     for ray_ind = 1:size(ind_of_rays_that_are_pre_absorbed,2)
         ind_of_valid_rays = ind_of_valid_rays(ind_of_valid_rays~=ind_of_rays_that_are_pre_absorbed(ray_ind)); 
     end
@@ -203,7 +203,7 @@ for timestep_ind = 1:length(phi_vector)
     ray_paths(:,7,ind_of_rays_that_are_absorbed_second)=absorption_points;
     ind_of_rays_that_are_absorbed = [ind_of_rays_that_are_absorbed_second ind_of_rays_that_are_pre_absorbed];
     if strcmp(verbosity,'verbose')
-        disp(['Anzahl sekundär absorbierter Strahlen: ' int2str(num_rays)])
+        disp(['Anzahl sekundï¿½r absorbierter Strahlen: ' int2str(num_rays)])
     end
     %%%%%%%%%%%%%%%%%%
     
@@ -214,7 +214,7 @@ for timestep_ind = 1:length(phi_vector)
     %Alle Fokuspunkte in einer Matrix speichern
     focus_line = [focus_line focus];
     
-    %%% Es folgen schöne plots
+    %%% Es folgen schï¿½ne plots
     if strcmp(verbosity,'verbose')
         figure;
         % plot current focus position
@@ -229,14 +229,14 @@ for timestep_ind = 1:length(phi_vector)
         disp('================================')
     end
     strahlen_gesamt = strahlen_gesamt + length(ind_of_rays_that_are_absorbed);
-end %für timestep-Schleife
-% end %für phi-Schleife
-% end %für theta-Schleife
+end %fï¿½r timestep-Schleife
+% end %fï¿½r phi-Schleife
+% end %fï¿½r theta-Schleife
 %%%%%
 %ENDE der for-Schleife
 %%%%%
 
-%%% Es folgen weitere schöne plots
+%%% Es folgen weitere schï¿½ne plots
 %plot der Spiegeloberflaeche
 if strcmp(verbosity,'verbose')
     figure;
