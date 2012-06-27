@@ -5,25 +5,31 @@ options = optimset('PlotFcns',@optimplotfval,'Display','iter','MaxFunEvals',1000
 modus.ordnung = 2;
 
 % 10 willkürliche Startwerte
-start_vec(1,:) = [0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 1];
-start_vec(2,:) = [1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1];
-start_vec(3,:) = [0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 1];
-start_vec(4,:) = [0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 1];
-start_vec(5,:) = [1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 2];
-start_vec(6,:) = [1/20 1/50 0 0 1/20 1/50 0 0 1/20 1/50 0 0 1/20 1/50 0 0 4];
-start_vec(7,:) = [1/20 -1/20 0 0 1/20 -1/20 0 0 1/20 -1/20 0 0 1/20 -1/20 0 0 3];
-start_vec(8,:) = [-1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 2];
-start_vec(9,:) = [0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 3];
-start_vec(10,:)= [0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 4];
+start_vec(1,:) = [1 1 2 0 0 1 0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 1];
+lower_bounds = -Inf(size(start_vec)); lower_bounds(6,end) = 1e-6;
+upper_bounds = Inf(size(start_vec)); upper_bounds(6,end) = 3;
 
-modus.absorber_optimieren = false;
+% start_vec(2,:) = [1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1];
+% start_vec(3,:) = [0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 1];
+% start_vec(4,:) = [0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 1];
+% start_vec(5,:) = [1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 1/20 2];
+% start_vec(6,:) = [1/20 1/50 0 0 1/20 1/50 0 0 1/20 1/50 0 0 1/20 1/50 0 0 4];
+% start_vec(7,:) = [1/20 -1/20 0 0 1/20 -1/20 0 0 1/20 -1/20 0 0 1/20 -1/20 0 0 3];
+% start_vec(8,:) = [-1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 -1/40 2];
+% start_vec(9,:) = [0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 3];
+% start_vec(10,:)= [0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 0 1/20 0 0 4];
+% 
+modus.absorber_optimieren = true;
 modus.kleinen_spiegel_optimieren = true;
-modus.num_rays_per_row = 20;
+modus.grossen_spiegel_optimieren = true;
+modus.spiegelpfad_radius_optimieren = true;
+modus.num_rays_per_row = 10;
 modus.number_zeitpunkte = 5;
 
 for i=1:4
     % Optimierung starten
-    [x_grob, FVAL] = fminsearch(@(x)Objective_function(x,modus),start_vec(i,:),options);
+%     [x_grob, FVAL] = fminsearch(@(x)Objective_function(x,modus),start_vec(i,:),options);
+    [x_grob, FVAL] = fmincon(@(x)Objective_function(x,modus),start_vec(i,:),[],[],[],[],lower_bounds,upper_bounds,@(x)elliptic_constraints(x,modus),options);
     % FVAL am Anfang von x_grob anhängen und für später speichern
     Ergebnisse(:,i) = [FVAL x_grob]'
 end

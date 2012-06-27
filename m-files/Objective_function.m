@@ -93,7 +93,7 @@ spiegel_klein = [spiegel_klein zeros(1,35-((ord+1)^2-1))];
 handle_to_mirror_function = @(x,y)mirr_func2(x,y,spiegel_gross);
 small_mirr_hand = @(x,y)mirr_func2(x,y,spiegel_klein);
 small_mirr_hand_inv = @(x,y)mirr_func_small_inv(x,y,spiegel_klein);
-verbosity = 'nonverbose';
+verbosity = 'verbose';
 
 
 % %plot der Spiegeloberflaeche
@@ -114,7 +114,7 @@ verbosity = 'nonverbose';
 %FOR-Schleife (geht alle Einstrahlwinkel durch)
 %%%%%
 
-parfor timestep_ind = 1:length(phi_vector)
+for timestep_ind = 1:length(phi_vector)
 
     theta = theta_vector(timestep_ind);
     phi = phi_vector(timestep_ind);
@@ -263,5 +263,7 @@ if strcmp(verbosity,'verbose')
 end
 
 strahlen_gesamt = -strahlen_gesamt
+ell_area = elliptic_area(ellipt_parameters)
+strahlendichte = strahlen_gesamt/ell_area
 
 end
