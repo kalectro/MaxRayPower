@@ -11,21 +11,20 @@ function finally = optimizer_maxim()
     modus.number_zeitpunkte = 15;
 
     % Zufälligen Startvektor erstellen
-    randomNum = 0;
-
-    if modus.absorber_optimieren
-        randomNum = randomNum + 6;
+    randomNum = modus.absorber_optimieren*6 + ...
+                modus.grossen_spiegel_optimieren* (modus.ordnung+1)^2-1 + ...
+                modus.kleinen_spiegel_optimieren*(modus.ordnung+1)^2-1;
+    C =1;
+    
+    while(C>0)
+        A = [randi(1000,1,randomNum)/1000 , (randi(45,1,1)/10 + .5)];
+    
+        % checken, ob der Absirber eine Ellipse ist
+        a=A(1);
+        b=A(2);
+        c=A(3);
+        C = -(4*b*a - c^2) + 1e-6;
     end
-
-    if modus.grossen_spiegel_optimieren
-        randomNum = randomNum + (modus.ordnung+1)^2-1;
-    end
-
-    if modus.kleinen_spiegel_optimieren
-        randomNum = randomNum + (modus.ordnung+1)^2-1;
-    end
-
-    A = [randi(1000,1,randomNum)/1000 , (randi(45,1,1)/10 + .5)];
 
     % Debugging-Ausgabe in Datei
     fid = fopen('optimization_start.txt','a+');
@@ -45,7 +44,8 @@ function finally = optimizer_maxim()
     % Optimierer-Parameter festlegen
     options = optimset('PlotFcns',@optimplotfval,'Display','iter','MaxFunEvals',1000);
     lower_bounds = -Inf(size(A)); 
-    lower_bounds(6,end) = 1e-6;
+    lower_bounds(6) = 1e-6;
+    lower_bounds(end) = 1e-6;
     upper_bounds = Inf(size(A)); 
     upper_bounds(6) = 3;
     upper_bounds(end) = 5;
