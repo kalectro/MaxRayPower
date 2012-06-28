@@ -1,6 +1,11 @@
 function strahlen_gesamt = Objective_function(A,modus)
-% function zum Ausrechnen des Fokus fï¿½r verschiedene Einstrahlwinkel
+% function zum Ausrechnen des Fokus fuer verschiedene Einstrahlwinkel
 %  close all
+
+% Parameter um den Ablauf zu beeinflussen
+% theta_vector = -80:20:80;
+% phi_vector = -80:20:80;
+verbosity = 'nonverbose';
 
 % Notwendige Initialisierungen
 strahlen_gesamt = 0;
@@ -14,10 +19,21 @@ mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4
 number_zeitpunkte=modus.number_zeitpunkte;
 num_rays_per_row = modus.num_rays_per_row;
 [phi_vector, theta_vector] = make_phi_theta(number_zeitpunkte);
+sun_area = 8 * half_mirr_edge_length^2; %ist so
+%Leistungsdichte fuer alle Zeitpunkte mit Hilfe von Wiki-Formel ausrechnen
+%[Wdichte_vektor] = leistungsdichte(theta_vector);
+%[W_vektor] = Wdichte_vektor*sun_area;
+%[WperRay_vektor] = W_vektor / num_rays_per_row^2;
+%In jedem Zeitschritt muss jetzt 
+%WperRay_vektor(timestep_ind)*length(ind_of_rays_that_are_absorbed)
+%hochgezaehlt werden.
+%Die Tagesleistung ist dann jene Summe mal 15/number_zeitpunkte (=kWh/d).
+%Diese negiert koennen wir dann als Rueckgabe an den optimizer geben.
+%%%%%%%%
 
 %Aufteilung von A:
 % 1) Ellipsenparameter (6)
-% 2) Groï¿½er Spiegel (Ordnung-1)^2-1 (minus eins, da der Offset entfï¿½llt)
+% 2) Grosser Spiegel (Ordnung+1)^2-1 (minus eins, da der Offset entfaellt)
 % 3) Kleiner Spiegel (dito)
 % 4) Focus-Entfernung (1)
 
@@ -81,20 +97,14 @@ else
     radius=mirr_quadrat_equivalent;
 end
 
-
-%Auffï¿½llen
+%Auffuellen
 spiegel_gross = [spiegel_gross zeros(1,35-((ord+1)^2-1))];
 spiegel_klein = [spiegel_klein zeros(1,35-((ord+1)^2-1))];
 
-    
-% Parameter um den Ablauf zu beeinflussen
-% theta_vector = -80:20:80;
-% phi_vector = -80:20:80;
+%Handles
 handle_to_mirror_function = @(x,y)mirr_func2(x,y,spiegel_gross);
 small_mirr_hand = @(x,y)mirr_func2(x,y,spiegel_klein);
 small_mirr_hand_inv = @(x,y)mirr_func_small_inv(x,y,spiegel_klein);
-verbosity = 'nonverbose';
-
 
 % %plot der Spiegeloberflaeche
 % [rays_x rays_y] = meshgrid(linspace(mirr_borders(1), mirr_borders(2), 10));
@@ -130,9 +140,9 @@ for timestep_ind = 1:length(phi_vector)
     %ZEITFRESSER (20sek bei 100 Strahlen)
     %Verbesserung 23.04. ->> 5,3sek bei 100 Strahlen
     %Verbesserung 20.05. ->> 0,1sek bei 100 Strahlen
-    %Verbesserung 23.05. ->> 4  sek bei 16000 Strahlen
+    %Verbesserung 23.05. ->> 4  sek bei 16000 Strahlen (40*40 und 10 Zeitpkte)
     %Weitere Verbesserung moeglich:
-    %   1. Spiegel-z-Hoehe begrenzen
+    %   1. Spiegel-z-Hoehe begrenzen (28.06.: ca. 5 Meter)
     %   2. Analytische Loesung fuer t, erste Nullstele mit NewtonRaphson finden,
     %      und dann Treffer von oben/unten unterscheiden
     %%%%%%%%%%%%%%%%%% Function call!
@@ -182,7 +192,7 @@ for timestep_ind = 1:length(phi_vector)
     end
     %%%%%%%%%%%%%%%%%%
     
-    % Kollisionen mit groï¿½em Spiegel, die direkt absorbiert wurden nicht weiter beruecksichtigen.
+    % Kollisionen mit grossem Spiegel, die direkt absorbiert wurden nicht weiter beruecksichtigen.
     for ray_ind = 1:size(ind_of_rays_that_are_pre_absorbed,2)
         ind_of_valid_rays = ind_of_valid_rays(ind_of_valid_rays~=ind_of_rays_that_are_pre_absorbed(ray_ind)); 
     end
@@ -197,8 +207,8 @@ for timestep_ind = 1:length(phi_vector)
     %%%%%%%%%%%%%%%%%%
 
     %%%%%%%%%%%%%%%%%% Function call!
-    %Absorption
-    [num_rays,angle_rays,energy,absorption_points,ind_of_rays_that_are_absorbed_second] =...
+    %sekundaere Absorption
+    [num_rays,~,~,absorption_points,ind_of_rays_that_are_absorbed_second] =...
         absorber(rays_from_small_mirror, ellipt_parameters, handle_to_mirror_function,'nonverbose',ind_of_rays_from_small_mirror);
     ray_paths(:,7,ind_of_rays_that_are_absorbed_second)=absorption_points;
     ind_of_rays_that_are_absorbed = [ind_of_rays_that_are_absorbed_second ind_of_rays_that_are_pre_absorbed];
@@ -229,14 +239,14 @@ for timestep_ind = 1:length(phi_vector)
         disp('================================')
     end
     strahlen_gesamt = strahlen_gesamt + length(ind_of_rays_that_are_absorbed);
-end %fï¿½r timestep-Schleife
-% end %fï¿½r phi-Schleife
-% end %fï¿½r theta-Schleife
+end %fuer timestep-Schleife
+% end %fuer phi-Schleife
+% end %fuer theta-Schleife
 %%%%%
 %ENDE der for-Schleife
 %%%%%
 
-%%% Es folgen weitere schï¿½ne plots
+%%% Es folgen weitere schöene plots
 %plot der Spiegeloberflaeche
 if strcmp(verbosity,'verbose')
     figure;
@@ -264,6 +274,6 @@ end
 
 strahlen_gesamt = -strahlen_gesamt
 ell_area = elliptic_area(ellipt_parameters)
-strahlendichte = strahlen_gesamt/ell_area
+strahlendichte = strahlen_gesamt/ell_area; %sagt noch nix aus
 
 end
