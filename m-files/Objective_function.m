@@ -1,4 +1,5 @@
-function strahlen_gesamt = Objective_function(A,modus)
+function strahlendichte = Objective_function(A,modus)
+% function strahlen_gesamt = Objective_function(A,modus)
 % function zum Ausrechnen des Fokus fuer verschiedene Einstrahlwinkel
 %  close all
 
@@ -272,8 +273,8 @@ if strcmp(verbosity,'verbose')
     camlight
 end
 
-strahlen_gesamt = -strahlen_gesamt
-ell_area = elliptic_area(ellipt_parameters)
-strahlendichte = strahlen_gesamt/ell_area; %sagt noch nix aus
+strahlen_gesamt = -strahlen_gesamt;
+ell_area = elliptic_area(ellipt_parameters);
+strahlendichte = strahlen_gesamt/ell_area %sagt noch nix aus
 
 end
