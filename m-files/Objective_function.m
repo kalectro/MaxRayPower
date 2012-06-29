@@ -1,5 +1,5 @@
-% function strahlendichte = Objective_function(A,modus)
-function strahlen_gesamt = Objective_function(A,modus)
+function strahlendichte = Objective_function(A,modus)
+% function strahlen_gesamt = Objective_function(A,modus)
 % function zum Ausrechnen des Fokus fuer verschiedene Einstrahlwinkel
 %  close all
     
