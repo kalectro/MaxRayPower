@@ -52,7 +52,8 @@ function finally = optimizer_maxim()
     
     tic;
     % Optimierer starten
-    [A, FVAL] = fmincon(@(x)Objective_function(x,modus),A,[],[],[],[],lower_bounds,upper_bounds,@(x)elliptic_constraints(x,modus),options);
+%     [A, FVAL] = fmincon(@(x)Objective_function(x,modus),A,[],[],[],[],lower_bounds,upper_bounds,@(x)elliptic_constraints(x(1:3),modus),options);
+    [A, FVAL] = fminsearchcon(@(x)Objective_function(x,modus),A,lower_bounds,upper_bounds,[],[],@(x)elliptic_constraints(x(1:3),modus),options);
     tstop = toc;
     
     % Ergebnisse in die Datei schreiben
