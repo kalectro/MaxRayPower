@@ -1,12 +1,12 @@
 function finally = optimizer_maxim()
     % Ordnung der Spiegelfunktion
-    modus.ordnung = 5;
+    modus.ordnung = 2;
 
     %  Modus einstellen
-    modus.absorber_optimieren = true;
+    modus.absorber_optimieren = false;
     modus.kleinen_spiegel_optimieren = true;
     modus.grossen_spiegel_optimieren = true;
-    modus.spiegelpfad_radius_optimieren = true;
+    modus.spiegelpfad_radius_optimieren = false;
     modus.num_rays_per_row = 100;
     modus.number_zeitpunkte = 15;
 
