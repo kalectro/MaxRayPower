@@ -1,12 +1,12 @@
 function finally = optimizer_maxim()
     % Ordnung der Spiegelfunktion
-    modus.ordnung = 5;
+    modus.ordnung = 2;
 
     %  Modus einstellen
-    modus.absorber_optimieren = true;
+    modus.absorber_optimieren = false;
     modus.kleinen_spiegel_optimieren = true;
     modus.grossen_spiegel_optimieren = true;
-    modus.spiegelpfad_radius_optimieren = true;
+    modus.spiegelpfad_radius_optimieren = false;
     modus.num_rays_per_row = 100;
     modus.number_zeitpunkte = 15;
 
@@ -52,7 +52,8 @@ function finally = optimizer_maxim()
     
     tic;
     % Optimierer starten
-    [A, FVAL] = fmincon(@(x)Objective_function(x,modus),A,[],[],[],[],lower_bounds,upper_bounds,@(x)elliptic_constraints(x,modus),options);
+%     [A, FVAL] = fmincon(@(x)Objective_function(x,modus),A,[],[],[],[],lower_bounds,upper_bounds,@(x)elliptic_constraints(x(1:3),modus),options);
+    [A, FVAL] = fminsearchcon(@(x)Objective_function(x,modus),A,lower_bounds,upper_bounds,[],[],@(x)elliptic_constraints(x(1:3),modus),options);
     tstop = toc;
     
     % Ergebnisse in die Datei schreiben
