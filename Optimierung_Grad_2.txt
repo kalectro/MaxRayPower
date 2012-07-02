@@ -1,0 +1,15 @@
+##########################
+Parameter der Optimierung:
+--------------------------
+modus.ordnung: 2
+modus.absorber_optimieren: 0
+modus.grossen_spiegel_optimieren: 1
+modus.kleinen_spiegel_optimieren: 1
+modus.spiegelpfad_radius_optimieren: 0
+modus.num_rays_per_row: 100
+modus.number_zeitpunkte: 15
+A = [ 0.815000 0.906000 0.127000 0.914000 0.633000 0.098000 0.279000 0.547000 0.958000 0.965000 0.158000 0.971000 0.958000 0.486000 0.801000 0.142000 2.400000]
+optimiertes A = [ 3.773764 4.082476 -0.417852 1.099477 -0.247735 0.727536 0.877974 1.301105 1.347643 -0.985132 0.098795 -0.063957 0.219685 -0.736024 0.537959 0.071259 1.290853 ]
+Laufzeit: 2973 min 27 sec
+##########################
+
