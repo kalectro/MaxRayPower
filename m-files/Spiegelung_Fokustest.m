@@ -2,16 +2,29 @@ function Spiegelung_Fokustest
 % function zum Ausrechnen des Fokus für verschiedene Einstrahlwinkel
  close all
 
+ %Fuer die Dokumentation: Bilder von der Seite in 2d und ohne zweiten
+ %Spiegel
+%  myplot_2d = true;
+plotmode.smallmirr_axissystem = false;
+plotmode.smallmirr = false;
+ 
 % Parameter um den Ablauf zu beeinflussen
 % theta_vector = -80:20:80;
 % phi_vector = -80:20:80;
 number_zeitpunkte=30;
-num_rays_per_row = 30;
-small_mirr_hand = @mirr_func_small;
-small_mirr_hand_inv = @mirr_func_small_inv;
-handle_to_mirror_function = @mirr_func;
+num_rays_per_row = 20;
+
+ord=2;
+
+%Auffuellen
+spiegel_gross = [[0 0 0 1/20 1/20 0 0 0] zeros(1,35-((ord+1)^2-1))];
+spiegel_klein = [[0 0 0 1/20 1/20 0 0 0] zeros(1,35-((ord+1)^2-1))];
+
+handle_to_mirror_function = @(x,y)mirr_func2(x,y,spiegel_gross);
+small_mirr_hand = @(x,y)mirr_func2(x,y,spiegel_klein);
+small_mirr_hand_inv = @(x,y)mirr_func_small_inv(x,y,spiegel_klein);
 ellipt_parameters = [1 1 0 0 0 0.5];%parameter für die Form der Absorberellipse
-verbosity = 'nonverbose';
+verbosity = 'verbose';
 
 % Notwendige Initialisierungen
 strahlen_gesamt = 0;
@@ -21,6 +34,9 @@ global mirr_borders half_mirr_edge_length
 half_mirr_edge_length = sqrt(10)/2; %10qm Grundflaeche
 mirr_borders = [-half_mirr_edge_length half_mirr_edge_length -half_mirr_edge_length half_mirr_edge_length];
 mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4)-mirr_borders(3)));
+
+radius=mirr_quadrat_equivalent;
+
 [x,y,z] = sphere;
 [phi_vector, theta_vector] = make_phi_theta(number_zeitpunkte);
 
@@ -43,14 +59,15 @@ mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4
 %FOR-Schleife (geht alle Einstrahlwinkel durch)
 %%%%%
 
-for timestep_ind = 1:length(phi_vector)
+%for timestep_ind = 1:length(phi_vector)
+for theta = 0
+    phi = 30;
+%     theta = theta_vector(timestep_ind);
+%     phi = phi_vector(timestep_ind);
 
-    theta = theta_vector(timestep_ind);
-    phi = phi_vector(timestep_ind);
-
-    if strcmp(verbosity,'verbose')
-        disp(['Werte um ' num2str(5+(15/number_zeitpunkte)*(timestep_ind-1)) ' Uhr'])
-    end
+%     if strcmp(verbosity,'verbose')
+%         disp(['Werte um ' num2str(5+(15/number_zeitpunkte)*(timestep_ind-1)) ' Uhr'])
+%     end
     %%%%%%%%%%%%%%%%%% Function call!
     % Strahlen generieren
     ray_paths = raymaker(phi, theta, num_rays_per_row,'nonverbose');
@@ -65,7 +82,7 @@ for timestep_ind = 1:length(phi_vector)
     %   2. Analytische Loesung fuer t, erste Nullstele mit NewtonRaphson finden,
     %      und dann Treffer von oben/unten unterscheiden
     %%%%%%%%%%%%%%%%%% Function call!
-    % Kollisionen mit Spiegel und boundaries checken.
+    % Kollisionen mit grossem Spiegel und grosse boundaries checken.
     [collision_points, ind_of_valid_rays] = collision_tracker_dychotom(ray_paths(:,1:2,:), handle_to_mirror_function);
     if isempty(ind_of_valid_rays) % wenn kein Strahl mehr existiert
         if strcmp(verbosity,'verbose')
@@ -92,9 +109,11 @@ for timestep_ind = 1:length(phi_vector)
     %10 Strahlen, die ihm am nächsten sind, bzw die ihm näher als xy cm sind
     %%%%%%%%%%%%%%%%%% Function call!
     % Fokuspunkt berechnen
-    focus = focus_of_rays_fast(ray_paths(:,3:4,ind_of_valid_rays));
+    focus = focus_of_rays_fast(ray_paths(:,3:4,ind_of_valid_rays), radius);
     %%%%%%%%%%%%%%%%%%
     
+    %save rays that hit the big one directly
+    ind_of_big_mirror_rays = ind_of_valid_rays;
     %%%%%%%%%%%%%%%%%%
     % vom kleinen Spiegel geblockte Strahlen verwerfen
     ind_of_valid_rays=discard_rays_blocked_by_small_mirror(ray_paths(:,1:2,:),focus,small_mirr_hand_inv);
@@ -103,7 +122,10 @@ for timestep_ind = 1:length(phi_vector)
     %%%%%%%%%%%%%%%%%% Function call!
     % Direktabsorbtion
     [num_rays,~,~,absorption_points,ind_of_rays_that_are_pre_absorbed] =...
-        absorber(ray_paths(:,1:2,ind_of_valid_rays), ellipt_parameters, handle_to_mirror_function,'nonverbose',ind_of_valid_rays);
+        absorber(...
+        ray_paths(:,1:2,ind_of_valid_rays), ellipt_parameters, handle_to_mirror_function,...
+        'nonverbose', ind_of_valid_rays);
+    
     ray_paths(:,5:6,ind_of_rays_that_are_pre_absorbed)=ray_paths(:,1:2,ind_of_rays_that_are_pre_absorbed);  % der Vollständigkeit halber, damit ein Plot möglich ist
     ray_paths(:,7,ind_of_rays_that_are_pre_absorbed)=absorption_points;
     if strcmp(verbosity,'verbose')
@@ -120,8 +142,11 @@ for timestep_ind = 1:length(phi_vector)
     %%%%%%%%%%%%%%%%%% Function call!
     %kleiner Spiegel
     rays_to_mirror=ray_paths(:,3:4,ind_of_valid_rays);
+    
     [rays_from_small_mirror,ind_of_rays_from_small_mirror]=...
-        smallmirrorreflection(rays_to_mirror,focus,small_mirr_hand,ind_of_valid_rays,'nonverbose');
+        smallmirrorreflection(...
+        rays_to_mirror,focus,small_mirr_hand,ind_of_valid_rays,'nonverbose');
+    
     ray_paths(:,5:6,ind_of_rays_from_small_mirror)=rays_from_small_mirror;
     %%%%%%%%%%%%%%%%%%
 
@@ -148,13 +173,15 @@ for timestep_ind = 1:length(phi_vector)
         figure;
         % plot current focus position
         s_rad = 0.01*mirr_quadrat_equivalent;
-        hold on
-        surf(s_rad*x+focus(1),s_rad*y+focus(2),s_rad*z+focus(3),'EdgeColor', 'none', 'FaceColor', 'blue');
-        hold off
+%         hold on
+%         surf(s_rad*x+focus(1),s_rad*y+focus(2),s_rad*z+focus(3),'EdgeColor', 'none', 'FaceColor', 'blue');
+%         hold off
         axis vis3d
         view(3)
-        plot_all_the_rays(ray_paths, ind_of_valid_rays, ind_of_rays_that_are_absorbed, ind_of_rays_that_are_absorbed_second, handle_to_mirror_function, small_mirr_hand, focus,ellipt_parameters)
-        disp(['Anzahl aller absorbierter Strahlen: ' int2str(length(ind_of_rays_that_are_absorbed))])
+        plot_all_the_rays(ray_paths, ind_of_valid_rays, ind_of_rays_that_are_absorbed, ...
+            ind_of_rays_that_are_absorbed_second, handle_to_mirror_function, ...
+            small_mirr_hand, focus,ellipt_parameters, plotmode, ind_of_big_mirror_rays)
+        disp(['Anzahl der absorbierter Strahlen in einem Zeitschritt: ' int2str(length(ind_of_rays_that_are_absorbed))])
         disp('================================')
     end
     strahlen_gesamt = strahlen_gesamt + length(ind_of_rays_that_are_absorbed);
@@ -167,29 +194,29 @@ end %für timestep-Schleife
 
 %%% Es folgen weitere schöne plots
 %plot der Spiegeloberflaeche
-if strcmp(verbosity,'verbose')
-    figure;
-    axis equal
-    axis([1.5*mirr_borders 0 3*half_mirr_edge_length])
-    [rays_x rays_y] = meshgrid(linspace(mirr_borders(1), mirr_borders(2), 10));
-    mirror_surface = zeros(10);
-    for x_ind = 1:10
-        for y_ind = 1:10
-            mirror_surface(x_ind,y_ind) = handle_to_mirror_function(rays_x(x_ind,y_ind),rays_y(x_ind,y_ind));
-        end
-    end
-    hold on
-    surf(rays_x,rays_y,mirror_surface,'FaceColor','red','EdgeColor','none','FaceAlpha',0.8);
-    hold off
-    % plot connecting line of all focus points
-    hold on
-    plot3(focus_line(1,:),focus_line(2,:),focus_line(3,:),'LineWidth', 4);
-    hold off
-    axis vis3d image
-    view(3)
-    lighting gouraud
-    camlight
-end
+% if strcmp(verbosity,'verbose')
+%     figure;
+%     axis equal
+%     axis([1.5*mirr_borders 0 3*half_mirr_edge_length])
+%     [rays_x rays_y] = meshgrid(linspace(mirr_borders(1), mirr_borders(2), 10));
+%     mirror_surface = zeros(10);
+%     for x_ind = 1:10
+%         for y_ind = 1:10
+%             mirror_surface(x_ind,y_ind) = handle_to_mirror_function(rays_x(x_ind,y_ind),rays_y(x_ind,y_ind));
+%         end
+%     end
+%     hold on
+%     surf(rays_x,rays_y,mirror_surface,'FaceColor','red','EdgeColor','none','FaceAlpha',0.8);
+%     hold off
+%     % plot connecting line of all focus points
+%     hold on
+%     plot3(focus_line(1,:),focus_line(2,:),focus_line(3,:),'LineWidth', 4);
+%     hold off
+%     axis vis3d image
+%     view(3)
+%     lighting gouraud
+%     camlight
+% end
 disp('================================')
 disp('================================')
 disp(['Anzahl ALLER absorbierter Strahlen: ' int2str(strahlen_gesamt)])
