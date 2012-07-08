@@ -135,8 +135,20 @@ Nachfolgend wird die Vorgehensweise des Programms grob beschrieben.
 \subsection{Verschiedene Generatorantriebe}
  (Stirling, Turbine)
 \section{Kosten}
-\section{Ergebnisse}
 
+\section{Ergebnisse}
+Bis zu diesem Zeitpunkt (\today) haben wir einige Szenarien der Optimierung durchgerechnet. Die grundlegende korrekte Funktion des Raytracers soll in Abbildung~\ref{pic:netteReflektion} verdeutlicht werden. Nur Sonnenstrahlen, die den blau dargestellten Absorber treffen, sind abgebildet. Der große und kleine Spiegel haben jeweils Parabolform , dabei wird die Grundfläche des großen Spiegels von den vorgegebenen \unit[10]{m$^2$} begrenzt.
+
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=\textwidth]{images/netteReflektion}
+	\caption[Bündelung schräg]{Schräger Einfall auf Parabolspiegel, Reflektion und Bündelung durch zweiten kleineren Spiegel.}
+	\label{pic:netteReflektion}
+\end{figure}
+
+Zu erkennen ist die korrekte Verschiebung des kleinen Spiegels an den Ort des verschobenen Fokuspunktes (vgl. Abb.~\ref{pic:2dreflektion_schraeg}), sowie dessen Ausrichtung auf den Absorber.
+
+Ungefähr \unit[40]{\%} der zur Verfügung stehenden großen Spiegelfläche werden von Strahlen getroffen, die den Absorber erreichen. Dies entspräche also einem Wirkungsgrad $\eta_{Sonne}$ von \unit[40]{\%}. Für eine Abschätzung des Gesamtwirkungsgrades $\eta_{gesamt}$ muss noch der Wirkungsgrad des nachgeschalteten Generators multipliziert werden.
 
 \section{Alles Mögliche}
 
