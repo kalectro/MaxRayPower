@@ -5,25 +5,43 @@ function Spiegelung_Fokustest
  %Fuer die Dokumentation: Bilder von der Seite in 2d und ohne zweiten
  %Spiegel
 %  myplot_2d = true;
-plotmode.smallmirr_axissystem = false;
-plotmode.smallmirr = false;
+plotmode.smallmirr_axissystem = true;
+plotmode.smallmirr = true;
  
 % Parameter um den Ablauf zu beeinflussen
 % theta_vector = -80:20:80;
 % phi_vector = -80:20:80;
-number_zeitpunkte=30;
+number_zeitpunkte=15;
 num_rays_per_row = 20;
 
 ord=2;
 
+%Ergebnis vom Maxim Ordnung 2
+A = [ 3.773764 4.082476 -0.417852 1.099477 -0.247735 0.727536 0.877974 1.301105...%großer sp.
+    1.347643 -0.985132 0.098795 -0.063957 0.219685 -0.736024 0.537959 0.071259...%kleiner sp.
+    1.290853 ]; %radius
+% A = [ 0.815000 0.906000 0.127000 0.914000 0.633000 0.098000 0.279000 0.547000 0.958000 0.965000 0.158000 0.971000 0.958000 0.486000 0.801000 0.142000 2.400000]
+spiegel_gross = [A(1:8) zeros(1,35-((ord+1)^2-1))];
+spiegel_klein = [A(9:16) zeros(1,35-((ord+1)^2-1))];
+ellipt_parameters = [1 1 0 0 0 0.5];%parameter für die Form der Absorberellipse
+
+% %Ergebnis von Kai(?) Ordnung 2, mit Absorber optim. und radius optim.
+% A=[ 0.815000 0.906000 0.127000 0.914000 0.633000 0.098000...
+%     0.279000 0.547000 0.958000 0.965000 0.158000 0.971000 0.958000 0.486000...
+%     0.801000 0.142000 0.422000 0.916000 0.793000 0.960000 0.656000 0.036000...
+%     4.400000];
+% spiegel_gross = [A(1:8 +6) zeros(1,35-((ord+1)^2-1))];
+% spiegel_klein = [A(9:16 +6) zeros(1,35-((ord+1)^2-1))];
+% ellipt_parameters = A(1:6);
+
 %Auffuellen
-spiegel_gross = [[0 0 0 1/20 1/20 0 0 0] zeros(1,35-((ord+1)^2-1))];
-spiegel_klein = [[0 0 0 1/20 1/20 0 0 0] zeros(1,35-((ord+1)^2-1))];
+% spiegel_gross = [[0 0 0 1/20 1/20 0 0 0] zeros(1,35-((ord+1)^2-1))];
+% spiegel_klein = [[0 0 0 1/20 1/20 0 0 0] zeros(1,35-((ord+1)^2-1))];
 
 handle_to_mirror_function = @(x,y)mirr_func2(x,y,spiegel_gross);
 small_mirr_hand = @(x,y)mirr_func2(x,y,spiegel_klein);
 small_mirr_hand_inv = @(x,y)mirr_func_small_inv(x,y,spiegel_klein);
-ellipt_parameters = [1 1 0 0 0 0.5];%parameter für die Form der Absorberellipse
+
 verbosity = 'verbose';
 
 % Notwendige Initialisierungen
@@ -35,7 +53,8 @@ half_mirr_edge_length = sqrt(10)/2; %10qm Grundflaeche
 mirr_borders = [-half_mirr_edge_length half_mirr_edge_length -half_mirr_edge_length half_mirr_edge_length];
 mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4)-mirr_borders(3)));
 
-radius=mirr_quadrat_equivalent;
+% radius=mirr_quadrat_equivalent;
+radius = A(end);
 
 [x,y,z] = sphere;
 [phi_vector, theta_vector] = make_phi_theta(number_zeitpunkte);
@@ -59,11 +78,13 @@ radius=mirr_quadrat_equivalent;
 %FOR-Schleife (geht alle Einstrahlwinkel durch)
 %%%%%
 
-%for timestep_ind = 1:length(phi_vector)
-for theta = 0
-    phi = 30;
-%     theta = theta_vector(timestep_ind);
-%     phi = phi_vector(timestep_ind);
+for timestep_ind = 1:length(phi_vector)
+
+% for timestep_ind = 9
+% for theta = 0
+%     phi = 30;
+    theta = theta_vector(timestep_ind);
+    phi = phi_vector(timestep_ind);
 
 %     if strcmp(verbosity,'verbose')
 %         disp(['Werte um ' num2str(5+(15/number_zeitpunkte)*(timestep_ind-1)) ' Uhr'])
@@ -194,29 +215,29 @@ end %für timestep-Schleife
 
 %%% Es folgen weitere schöne plots
 %plot der Spiegeloberflaeche
-% if strcmp(verbosity,'verbose')
-%     figure;
-%     axis equal
-%     axis([1.5*mirr_borders 0 3*half_mirr_edge_length])
-%     [rays_x rays_y] = meshgrid(linspace(mirr_borders(1), mirr_borders(2), 10));
-%     mirror_surface = zeros(10);
-%     for x_ind = 1:10
-%         for y_ind = 1:10
-%             mirror_surface(x_ind,y_ind) = handle_to_mirror_function(rays_x(x_ind,y_ind),rays_y(x_ind,y_ind));
-%         end
-%     end
-%     hold on
-%     surf(rays_x,rays_y,mirror_surface,'FaceColor','red','EdgeColor','none','FaceAlpha',0.8);
-%     hold off
-%     % plot connecting line of all focus points
+if strcmp(verbosity,'verbose')
+    figure;
+    axis equal
+    axis([1.5*mirr_borders 0 3*half_mirr_edge_length])
+    [rays_x rays_y] = meshgrid(linspace(mirr_borders(1), mirr_borders(2), 10));
+    mirror_surface = zeros(10);
+    for x_ind = 1:10
+        for y_ind = 1:10
+            mirror_surface(x_ind,y_ind) = handle_to_mirror_function(rays_x(x_ind,y_ind),rays_y(x_ind,y_ind));
+        end
+    end
+    hold on
+    surf(rays_x,rays_y,mirror_surface,'FaceColor','red','EdgeColor','none','FaceAlpha',0.8);
+    hold off
+    % plot connecting line of all focus points
 %     hold on
 %     plot3(focus_line(1,:),focus_line(2,:),focus_line(3,:),'LineWidth', 4);
 %     hold off
-%     axis vis3d image
-%     view(3)
-%     lighting gouraud
-%     camlight
-% end
+    axis vis3d image
+    view(3)
+    lighting gouraud
+    camlight
+end
 disp('================================')
 disp('================================')
 disp(['Anzahl ALLER absorbierter Strahlen: ' int2str(strahlen_gesamt)])
