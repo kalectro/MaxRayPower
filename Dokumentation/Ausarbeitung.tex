@@ -25,9 +25,10 @@
 
 \graphicspath{{images/}}
 
+\definecolor{darkgreen}{rgb}{0,.5,0}
 
 \newcommand{\kai}[1]{{ \color{red} #1 }}
-\newcommand{\felix}[1]{{ \color{green} #1}}
+\newcommand{\felix}[1]{{ \color{darkgreen} #1}}
 \newcommand{\maxim}[1]{{ \color{blue} #1}}
 
 \newcommand{\todo}[1]{{\color{magenta}#1}}
@@ -36,7 +37,7 @@
 \usepackage{url}
 \title{Ausarbeitung\\Solarthermisches Kraftwerk}
 
-\author{K. Franke, M. Dolgov, F. Achilles}
+\author{K. Franke, M. Dolgov, F. Achilles\\The Raymen}
 \begin{document}
 \maketitle
 %
@@ -103,13 +104,13 @@ Es wurde zuerst untersucht wie sich schräg einfallende Strahlung auf den Fokusp
 bei schrägem Einfall%hat gefehlt ;)
 nicht nur, die Strahlen werden nun auch nicht mehr so gut gebündelt, sondern fächern auf (siehe Abbildung~\ref{pic:2dreflektion_schraeg}). 
 
-\begin{figure}[htb]
+\begin{figure}[ht]
 	\centering
 	\includegraphics[width=\textwidth]{images/2d_gerade}
 	\caption{Gerader Einfall auf Parabolspiegel}
 	\label{pic:2dreflektion}
 \end{figure}
-\begin{figure}[htb]
+\begin{figure}[ht]
 	\centering
 	\includegraphics[width=\textwidth]{images/2d_schraeg_20_grad}
 	\caption{Schräger Einfall auf Parabolspiegel (20$^{\circ}$ zur vertikalen Achse)}
@@ -120,8 +121,26 @@ nicht nur, die Strahlen werden nun auch nicht mehr so gut gebündelt, sondern f�
 
 \section{Beschreibung des Programms}
 \maxim{
-Zur Berechnung der Geometrie des beschriebenen Zweispiegelsystems wurde ein Mat"-lab-Programm geschrieben. Dieses Berechnet die optimalen Formen der Spiegel durch Lösen eines Maximierungsproblems, welches darin besteht, eine möglichst große Strahlendichte pro Absorberfläche zu erhalten. Die 
+Zur Berechnung der Geometrie des beschriebenen Zweispiegelsystems wurde ein Mat"-lab-Programm geschrieben. Dieses Berechnet die optimalen Formen der Spiegel durch Lösen eines Maximierungsproblems, welches darin besteht, eine möglichst große Strahlendichte pro Absorberfläche zu erhalten. Die } \felix{Die what? $:-P$}\maxim{
 Nachfolgend wird die Vorgehensweise des Programms grob beschrieben.
+}
+
+\felix{
+\subsection*{Kollisionsdetektion}
+Eine Kollision von Strahlen und Spiegelfläche muss zu vier Zeitpunkten des Programms überprüft werden:
+\begin{enumerate}
+\item Reflektion am großen Spiegel,
+\item Reflektion am kleinen Spiegel (blockierende Rückseite),
+\item Reflektion am kleinen Spiegel (spiegelnde Vorderseite),
+\item Absorption in der Absorberfläche.
+\end{enumerate}
+Dabei wird jedes Mal auf dasselbe Subprogramm zugegriffen. Dieser "Dychotome Collision Tracker" benötigt einen Ausdruck einer Spiegelfunktion in der Form $Z = f(X,Y)$, sowie ein Array, in dem die Strahlen (Startpunkt, Richtung) gespeichert sind.
+
+
+Der Collision Tracker folgt zunächst der Richtung jedes Strahls in einer festgelegten Schrittweite. Sobald eine Höhe $Z_{unter}$ erreicht wird, die kleiner als die Spiegelhöhe $Z_{Spiegel}$ an diesen Koordinaten ist, weiß man, dass man den Spiegel durchstoßen hat.
+
+
+Darauf beginnt die zweite Art der Suche, bei der der Suchraum mit jedem Schritt halbiert wird. Diese Dychotome Suche vergleicht, ob die Mitte zwischen zwei Randpunkten über oder unter dem Spiegel liegt. Ein Randpunkt ist dabei der soeben erreichte $Z_{unter}$, der zweite ist der Punkt $Z_{ueber}$, der vor dem Durchstoßen erreicht wurde. Zwischen diesen beiden Grenzen muss zwangsweise der genaue Kollisionspunkt liegen. Liegt die Mitte mit der Höhe $Z_{Mitte} = \dfrac{Z_{ueber} + Z_{unter}}{2}$ oberhalb des Spiegels an diesen Koordianten, so wird die Mitte die neue obere Grenze: $Z^{\ast}_{ueber} := Z_{Mitte}$. Andersherum wird die Mitte zur neuen unteren Grenze, wenn sie unterhalb des Spiegels liegt. Darauf wiederholt sich die Berechnung des Mittelpunkts und dessen Vergleich mit der Spiegelhöhe. Ist eine vorgegebene Genauigkeit des Unsicherheitsintervalls erreicht, terminiert der Algorithmus und gibt den aktuellen Mittelpunkt als Kollisionspunkt aus.
 }
 \subsection{Ablaufdiagramm (Top-Level)}
 \maxim{
@@ -137,6 +156,7 @@ Nachfolgend wird die Vorgehensweise des Programms grob beschrieben.
 \section{Kosten}
 
 \section{Ergebnisse}
+\felix{
 Bis zu diesem Zeitpunkt (\today) haben wir einige Szenarien der Optimierung durchgerechnet. Die grundlegende korrekte Funktion des Raytracers soll in Abbildung~\ref{pic:netteReflektion} verdeutlicht werden. Nur Sonnenstrahlen, die den blau dargestellten Absorber treffen, sind abgebildet. Der große und kleine Spiegel haben jeweils Parabolform , dabei wird die Grundfläche des großen Spiegels von den vorgegebenen \unit[10]{m$^2$} begrenzt.
 
 \begin{figure}[htb]
@@ -149,7 +169,7 @@ Bis zu diesem Zeitpunkt (\today) haben wir einige Szenarien der Optimierung durc
 Zu erkennen ist die korrekte Verschiebung des kleinen Spiegels an den Ort des verschobenen Fokuspunktes (vgl. Abb.~\ref{pic:2dreflektion_schraeg}), sowie dessen Ausrichtung auf den Absorber.
 
 Ungefähr \unit[40]{\%} der zur Verfügung stehenden großen Spiegelfläche werden von Strahlen getroffen, die den Absorber erreichen. Dies entspräche also einem Wirkungsgrad $\eta_{Sonne}$ von \unit[40]{\%}. Für eine Abschätzung des Gesamtwirkungsgrades $\eta_{gesamt}$ muss noch der Wirkungsgrad des nachgeschalteten Generators multipliziert werden.
-
+}
 \section{Alles Mögliche}
 
 \begin{align*}
@@ -191,9 +211,27 @@ Test
 	\label{eqn:Intensity}
 \end{align*}
 
+\newpage
 Wir sollten die Quellen mit BibTex organisieren, welches Programm nehmt ihr da? Ich kenn nur BibDesk aus dem IBT, werd das mal suchen.
 
 Quellen:
 
 \url{http://www.fvee.de/fileadmin/publikationen/Themenhefte/th2002/th2002_02_03.pdf}
+\url{http://upload.wikimedia.org/wikipedia/commons/4/47/Carnot-eta.PNG}
+\url{http://upload.wikimedia.org/wikipedia/commons/e/ed/EuroDishSBP_front.jpg}
+\url{http://www.infiniacorp.com/index.html}
+
+
+Preise für Stirling Motor:
+\url{http://www.bhkw-prinz.de/senertec-dachs-stirling-se-mikro-kwk/1812#Preis}
+\url{solo Stirling}
+24.000 Euro sagt:
+\url{http://energieberatung.ibs-hlk.de/planbhkw_stirling.htm}
+Creative Commons Lizenz - Stirling
+\url{http://ve-ingenieure.de/projekt_st05g_cnc.html}
+endlich mal was professionelles:
+\url{http://www.stirling.dk/index.php} und \url{http://www.stirling-energie.de/}
+hm war leider wieder ohne Preis, dafür sagt der hier auch 25.000Euro
+\url{http://www.stirlingmotor.org/downloads/basisinfo.pdf}
+
 \end{document}
