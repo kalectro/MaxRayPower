@@ -35,7 +35,7 @@ ellipt_parameters = [1 1 0 0 0 0.5];%parameter für die Form der Absorberellipse
 % ellipt_parameters = A(1:6);
 
 %Auffuellen
-spiegel_gross = [[0 0.5 0 1/20 1/20 0 0 0] zeros(1,35-((ord+1)^2-1))];
+spiegel_gross = [[0 0.0353 0 1/20 1/20 0 0 0] zeros(1,35-((ord+1)^2-1))];
 spiegel_klein = [[0 0 0 1/20 1/20 0 0 0] zeros(1,35-((ord+1)^2-1))];
 
 handle_to_mirror_function = @(x,y)mirr_func2(x,y,spiegel_gross);

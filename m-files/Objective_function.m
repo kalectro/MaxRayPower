@@ -46,6 +46,8 @@ sun_area = 8 * half_mirr_edge_length^2; %ist so
 ord = modus.ordnung;
 num_mirr_param = (ord+1)^2-1;
     
+
+
 % Parameter aufteilen 
 if modus.absorber_optimieren
     if length(A) < 6
@@ -103,6 +105,12 @@ else
     radius=mirr_quadrat_equivalent;
 end
 
+if modus.y_component
+    spiegel_gross([4 5]) = 1/20;
+    spiegel_gross(2) = A(1);
+    spiegel_klein([4 5]) = 1/20;
+end
+
 %Auffuellen
 spiegel_gross = [spiegel_gross zeros(1,35-((ord+1)^2-1))];
 spiegel_klein = [spiegel_klein zeros(1,35-((ord+1)^2-1))];
@@ -130,7 +138,7 @@ small_mirr_hand_inv = @(x,y)mirr_func_small_inv(x,y,spiegel_klein);
 %FOR-Schleife (geht alle Einstrahlwinkel durch)
 %%%%%
 
-for timestep_ind = 1:length(phi_vector)
+for timestep_ind = 2:(length(phi_vector)-1)
 
     theta = theta_vector(timestep_ind);
     phi = phi_vector(timestep_ind);
