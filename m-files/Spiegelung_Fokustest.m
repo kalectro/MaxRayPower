@@ -12,17 +12,17 @@ plotmode.smallmirr = true;
 % theta_vector = -80:20:80;
 % phi_vector = -80:20:80;
 number_zeitpunkte=15;
-num_rays_per_row = 20;
+num_rays_per_row = 40;
 
 ord=2;
 
 %Ergebnis vom Maxim Ordnung 2
-A = [ 3.773764 4.082476 -0.417852 1.099477 -0.247735 0.727536 0.877974 1.301105...%großer sp.
-    1.347643 -0.985132 0.098795 -0.063957 0.219685 -0.736024 0.537959 0.071259...%kleiner sp.
-    1.290853 ]; %radius
+% A = [ 3.773764 4.082476 -0.417852 1.099477 -0.247735 0.727536 0.877974 1.301105...%großer sp.
+%     1.347643 -0.985132 0.098795 -0.063957 0.219685 -0.736024 0.537959 0.071259...%kleiner sp.
+%     1.290853 ]; %radius
 % A = [ 0.815000 0.906000 0.127000 0.914000 0.633000 0.098000 0.279000 0.547000 0.958000 0.965000 0.158000 0.971000 0.958000 0.486000 0.801000 0.142000 2.400000]
-spiegel_gross = [A(1:8) zeros(1,35-((ord+1)^2-1))];
-spiegel_klein = [A(9:16) zeros(1,35-((ord+1)^2-1))];
+% spiegel_gross = [A(1:8) zeros(1,35-((ord+1)^2-1))];
+% spiegel_klein = [A(9:16) zeros(1,35-((ord+1)^2-1))];
 ellipt_parameters = [1 1 0 0 0 0.5];%parameter für die Form der Absorberellipse
 
 % %Ergebnis von Kai(?) Ordnung 2, mit Absorber optim. und radius optim.
@@ -35,8 +35,8 @@ ellipt_parameters = [1 1 0 0 0 0.5];%parameter für die Form der Absorberellipse
 % ellipt_parameters = A(1:6);
 
 %Auffuellen
-% spiegel_gross = [[0 0 0 1/20 1/20 0 0 0] zeros(1,35-((ord+1)^2-1))];
-% spiegel_klein = [[0 0 0 1/20 1/20 0 0 0] zeros(1,35-((ord+1)^2-1))];
+spiegel_gross = [[0 0.5 0 1/20 1/20 0 0 0] zeros(1,35-((ord+1)^2-1))];
+spiegel_klein = [[0 0 0 1/20 1/20 0 0 0] zeros(1,35-((ord+1)^2-1))];
 
 handle_to_mirror_function = @(x,y)mirr_func2(x,y,spiegel_gross);
 small_mirr_hand = @(x,y)mirr_func2(x,y,spiegel_klein);
@@ -45,6 +45,8 @@ small_mirr_hand_inv = @(x,y)mirr_func_small_inv(x,y,spiegel_klein);
 verbosity = 'verbose';
 
 % Notwendige Initialisierungen
+Leistung_gesamt = 0;
+Leistung_Sonne = 0;
 strahlen_gesamt = 0;
 focus_line = [];
 %mirr_borders are rectangular
@@ -53,8 +55,8 @@ half_mirr_edge_length = sqrt(10)/2; %10qm Grundflaeche
 mirr_borders = [-half_mirr_edge_length half_mirr_edge_length -half_mirr_edge_length half_mirr_edge_length];
 mirr_quadrat_equivalent = sqrt((mirr_borders(2)-mirr_borders(1))*(mirr_borders(4)-mirr_borders(3)));
 
-% radius=mirr_quadrat_equivalent;
-radius = A(end);
+radius=mirr_quadrat_equivalent;
+% radius = A(end);
 
 [x,y,z] = sphere;
 [phi_vector, theta_vector] = make_phi_theta(number_zeitpunkte);
@@ -78,14 +80,19 @@ radius = A(end);
 %FOR-Schleife (geht alle Einstrahlwinkel durch)
 %%%%%
 
-for timestep_ind = 1:length(phi_vector)
+for timestep_ind = 2:(length(phi_vector)-1)
 
 % for timestep_ind = 9
 % for theta = 0
 %     phi = 30;
     theta = theta_vector(timestep_ind);
     phi = phi_vector(timestep_ind);
-
+    %Leistung pro qm in Watt
+    sol_intensty = solar_intensity(theta);
+    %Leistung pro Strahl in Watt
+    P_ray = 20*sol_intensty/(num_rays_per_row^2); %*20 weil die raymaker-Fläche so gross ist
+    P_max = 10*sol_intensty; %10qm können maximal erhitzt werden
+    
 %     if strcmp(verbosity,'verbose')
 %         disp(['Werte um ' num2str(5+(15/number_zeitpunkte)*(timestep_ind-1)) ' Uhr'])
 %     end
@@ -205,6 +212,9 @@ for timestep_ind = 1:length(phi_vector)
         disp(['Anzahl der absorbierter Strahlen in einem Zeitschritt: ' int2str(length(ind_of_rays_that_are_absorbed))])
         disp('================================')
     end
+    Leistung_gesamt = Leistung_gesamt + length(ind_of_rays_that_are_absorbed)*P_ray;
+    Leistung_Sonne = Leistung_Sonne + P_max;
+    
     strahlen_gesamt = strahlen_gesamt + length(ind_of_rays_that_are_absorbed);
 end %für timestep-Schleife
 % end %für phi-Schleife
@@ -212,6 +222,14 @@ end %für timestep-Schleife
 %%%%%
 %ENDE der for-Schleife
 %%%%%
+
+aufgenommene_Energie = (Leistung_gesamt/(number_zeitpunkte-2))*...
+    (15*(number_zeitpunkte/(number_zeitpunkte-2)))/1000 %in kWh
+
+Sonnenenergie = (Leistung_Sonne/(number_zeitpunkte-2))*...
+    (15*(number_zeitpunkte/(number_zeitpunkte-2)))/1000 %in kWh
+
+Wirkungsgrad = aufgenommene_Energie/Sonnenenergie
 
 %%% Es folgen weitere schöne plots
 %plot der Spiegeloberflaeche
