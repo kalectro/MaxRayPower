@@ -1,17 +1,23 @@
-function Spiegelung_Fokustest
+function [Leistung_collector] = Spiegelung_Fokustest
 % function zum Ausrechnen des Fokus für verschiedene Einstrahlwinkel
  close all
 
  %Fuer die Dokumentation: Bilder von der Seite in 2d und ohne zweiten
  %Spiegel
 %  myplot_2d = true;
-plotmode.smallmirr_axissystem = true;
+plotmode.smallmirr_axissystem = false;
 plotmode.smallmirr = true;
- 
+plotmode.movie = false;
+
 % Parameter um den Ablauf zu beeinflussen
 % theta_vector = -80:20:80;
 % phi_vector = -80:20:80;
-number_zeitpunkte=15;
+if plotmode.movie
+    number_zeitpunkte=60;
+    verbosity = 'verbose';
+else
+    number_zeitpunkte=15;
+end
 num_rays_per_row = 40;
 
 ord=2;
@@ -45,6 +51,7 @@ small_mirr_hand_inv = @(x,y)mirr_func_small_inv(x,y,spiegel_klein);
 verbosity = 'verbose';
 
 % Notwendige Initialisierungen
+Leistung_collector=[];
 Leistung_gesamt = 0;
 Leistung_Sonne = 0;
 strahlen_gesamt = 0;
@@ -214,6 +221,8 @@ for timestep_ind = 2:(length(phi_vector)-1)
     end
     Leistung_gesamt = Leistung_gesamt + length(ind_of_rays_that_are_absorbed)*P_ray;
     Leistung_Sonne = Leistung_Sonne + P_max;
+    %Um den Verlauf über einen Tag zu plotten
+    Leistung_collector = [Leistung_collector length(ind_of_rays_that_are_absorbed)*P_ray];
     
     strahlen_gesamt = strahlen_gesamt + length(ind_of_rays_that_are_absorbed);
 end %für timestep-Schleife
