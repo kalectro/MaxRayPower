@@ -9,7 +9,7 @@ function rays = raymaker(phi,theta,num_rays_per_row, verbosity)
 %Sonnenstand nun auch leider definiert ist. Ansonsten stimmt der
 %Sonnenstand nur, wenn entweder phi oder theta null sind, zusammen machen
 %sie kein Sinn.
-%TODO
+%DONE
 
 % close all
 
